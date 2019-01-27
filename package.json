@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "NODE_ENV=test mocha",
-    "start": "nodemon app.js"
+    "start": "tsc && nodemon dist/app.js"
   },
   "keywords": [],
   "author": "",
@@ -19,10 +19,13 @@
     "sequelize-cli": "^5.4.0"
   },
   "devDependencies": {
-    "eslint": "^5.12.1",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jsx-a11y": "^6.1.2",
-    "eslint-plugin-react": "^7.12.4"
+    "@types/dotenv": "^6.1.0",
+    "@types/express": "^4.16.1",
+    "@types/mysql": "^2.15.5",
+    "@types/node": "^10.12.18",
+    "@types/sequelize": "^4.27.34",
+    "tslint": "^5.12.1",
+    "tslint-config-standard": "^8.0.1",
+    "typescript": "^3.2.4"
   }
 }
