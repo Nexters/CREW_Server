@@ -3,6 +3,8 @@ import { SequelizeAttributes } from "./index.d";
 
 export interface UserAttributes {
   id?: number;
+  member_provider: string;
+  member_provider_number: number;
   name: string;
   age: number;
   phone_number: string;
@@ -23,6 +25,12 @@ export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
   const attributes: SequelizeAttributes<UserAttributes> = {
     name: {
       type: DataTypes.STRING
+    },
+    member_provider: {
+      type: DataTypes.STRING
+    },
+    member_provider_number: {
+      type: DataTypes.INTEGER
     },
     age: {
       type: DataTypes.INTEGER
