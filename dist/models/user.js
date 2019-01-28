@@ -7,6 +7,12 @@ exports.UserFactory = (sequelize, DataTypes) => {
         name: {
             type: DataTypes.STRING
         },
+        member_provider: {
+            type: DataTypes.STRING
+        },
+        member_provider_number: {
+            type: DataTypes.INTEGER
+        },
         age: {
             type: DataTypes.INTEGER
         },
