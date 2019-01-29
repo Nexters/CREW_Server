@@ -5,7 +5,7 @@ import { createModels } from "./models/index";
 const env = process.env.NODE_ENV || 'development';
 const config = require("./config/config")[env];
 // config.dialect = 'mysql';
-const db = createModels(config);
+export const db = createModels(config);
 const app = express();
 
 app.use('/user', user);
