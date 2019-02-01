@@ -13,7 +13,6 @@ import jwt from "jsonwebtoken";
 import { db }from "../../app";
 import { insertReq, insertToken, loginRequired} from "../../middleware";
 import { UserAttributes } from "../../models/user";
-import { error } from "util";
 
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const router = express.Router();
