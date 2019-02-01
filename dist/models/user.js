@@ -1,10 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var ApplicantStatus;
+(function (ApplicantStatus) {
+    ApplicantStatus["Applicant"] = "applicant";
+    ApplicantStatus["PaperPass"] = "paper_pass";
+    ApplicantStatus["InterviewPass"] = "interview_pass";
+    ApplicantStatus["Fail"] = "fail";
+    ApplicantStatus["Admin"] = "admin";
+})(ApplicantStatus || (ApplicantStatus = {}));
 ;
 ;
 exports.UserFactory = (sequelize, DataTypes) => {
     const attributes = {
         name: {
+            type: DataTypes.STRING
+        },
+        member_provider: {
+            type: DataTypes.STRING
+        },
+        member_provider_number: {
             type: DataTypes.STRING
         },
         age: {
@@ -20,7 +34,7 @@ exports.UserFactory = (sequelize, DataTypes) => {
             type: DataTypes.STRING
         },
         status: {
-            type: DataTypes.ENUM('applicant', 'paper_pass', 'interview_pass', 'fail', 'admin')
+            type: DataTypes.ENUM(ApplicantStatus.Applicant, ApplicantStatus.PaperPass, ApplicantStatus.InterviewPass, ApplicantStatus.Fail, ApplicantStatus.Admin)
         },
         token: {
             type: DataTypes.STRING
