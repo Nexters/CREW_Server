@@ -1,16 +1,24 @@
 import Sequelize from "sequelize";
 import { SequelizeAttributes } from "./index.d";
 
+enum ApplicantStatus {
+  Applicant = "applicant",
+  PaperPass = "paper_pass",
+  InterviewPass= "interview_pass",
+  Fail = "fail",
+  Admin = "admin"
+}
+
 export interface UserAttributes {
   id?: number;
-  name: string;
+  name?: string;
   member_provider: string;
-  member_provider_number: number;
-  age: number;
-  phone_number: string;
-  email: string;
-  provide_image: string;
-  status: 'applicant' | 'paper_pass' | 'interview_pass' | 'fail' | 'admin';
+  member_provider_number: string;
+  age?: number;
+  phone_number?: string;
+  email?: string;
+  provide_image?: string;
+  status?: ApplicantStatus;
   token: string;
   created_at?: Date;
   updated_at?: Date;
@@ -30,7 +38,7 @@ export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
       type: DataTypes.STRING
     },
     member_provider_number: {
-      type: DataTypes.INTEGER
+      type: DataTypes.STRING
     },
     age: {
       type: DataTypes.INTEGER
@@ -45,7 +53,7 @@ export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
       type: DataTypes.STRING
     },
     status: {
-      type: DataTypes.ENUM('applicant','paper_pass','interview_pass','fail','admin')
+      type: DataTypes.ENUM(ApplicantStatus.Applicant, ApplicantStatus.PaperPass, ApplicantStatus.InterviewPass, ApplicantStatus.Fail, ApplicantStatus.Admin)
     },
     token: {
       type: DataTypes.STRING
