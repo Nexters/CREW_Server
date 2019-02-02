@@ -9,12 +9,13 @@ import expressSession from "express-session";
 import cookieParser from "cookie-parser";
 import flash from "connect-flash";
 import jwt from "jsonwebtoken";
-
+import * as FacebookPassPort from 'passport-facebook';
 import { db }from "../../app";
 import { insertReq, insertToken, loginRequired} from "../../middleware";
 import { UserAttributes } from "../../models/user";
 
 const GoogleStrategy = require('passport-google-oauth20').Strategy
+const FacebookStrategy = FacebookPassPort.Strategy;
 const router = express.Router();
 
 router.use(express.json());
@@ -39,7 +40,7 @@ passport.serializeUser((user: UserAttributes, done) => {
 
 passport.deserializeUser(async (str: String, done) => {
   const [member_provider, member_provider_number] = str.split(':')
-  try {
+  try { 
     const user = await db.User.find({where: {member_provider, member_provider_number}})
     if(user) { done(null, user)}  
   } catch (error) {
@@ -47,6 +48,8 @@ passport.deserializeUser(async (str: String, done) => {
   }
 });
 
+
+/*
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -72,6 +75,38 @@ passport.use(new GoogleStrategy({
     console.error(error);
     done(error);   
   }
+}))
+
+*/
+console.log("페북아이디 : "+process.env.FACEBOOK_CLIENT_ID);
+console.log("페북시크릿  : "+process.env.FACEBOOK_CLIENT_SECRET);
+console.log("콜백url : "+process.env.FACEBOOK_CALLBACK_URL);
+passport.use(new FacebookStrategy({
+  clientID : process.env.FACEBOOK_CLIENT_ID,
+  clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+  callbackURL: process.env.FACEBOOK_CALLBACK_URL,
+  passReqToCallback : true
+}, async(accessToken:any, refreshToken:any, profile:any ,done:any) => {
+  const avatar_url = profile.photos[0] ? profile.photos[0].value : null
+ try { 
+   const user = await db.User.find({where : { member_provider : 'facebook', member_provider_number : profile.id  }})
+   if(user) { 
+     done(null, user) 
+   }else{
+     const newUser = await db.User.create({
+       member_provider : 'facebook' ,
+       member_provider_number : profile.id,
+       provide_image: avatar_url,
+       token : accessToken
+     })
+     if(newUser) {
+       done(null,newUser) ; 
+     }
+   }
+ }catch(error){
+   console.error(error); 
+   done(error); 
+ }
 }))
 
 router.get('/', (req: express.Request, res: express.Response) => {
@@ -109,4 +144,29 @@ router.get('/google/callback', (req: express.Request, res: express.Response, nex
   })(req, res, next)
 })
 
+
+router.get('/facebook', passport.authenticate('facebook', {scope: ["profile", "email"]}));
+
+router.get('/facebook/callback', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  passport.authenticate('facebook', (err, user) => {
+    if (err) {
+      // 예상치 못한 예외 발생 시
+      return next(err)
+    }
+    if (!user) {
+      // 로그인 실패 시
+      return res.redirect(req.baseUrl)
+    }
+    req.logIn(user, err => {
+      // 예상치 못한 예외 발생 시
+      if (err) {
+        return next(err)
+      }
+      // 로그인 성공
+      res.redirect(`${req.baseUrl}/success`)
+    })
+  })(req, res, next)
+})
+
 export default router;
+

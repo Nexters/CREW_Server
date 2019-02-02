@@ -10,6 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -21,9 +28,11 @@ const express_session_1 = __importDefault(require("express-session"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const connect_flash_1 = __importDefault(require("connect-flash"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const FacebookPassPort = __importStar(require("passport-facebook"));
 const app_1 = require("../../app");
 const middleware_1 = require("../../middleware");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const FacebookStrategy = FacebookPassPort.Strategy;
 const router = express_1.default.Router();
 router.use(express_1.default.json());
 router.use(body_parser_1.default.urlencoded({ extended: false }));
@@ -55,20 +64,53 @@ passport_1.default.deserializeUser((str, done) => __awaiter(this, void 0, void 0
         console.error(error);
     }
 }));
-passport_1.default.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL
+/*
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: process.env.GOOGLE_CALLBACK_URL
+},async (accessToken:any, refreshToken:any, profile:any ,done:any) => {
+  const avatar_url = profile.photos[0] ? profile.photos[0].value : null
+  try {
+    const user = await db.User.find({where: {member_provider: 'google', member_provider_number: profile.id}})
+    if(user) {
+      done(null, user)
+    } else {
+      const newUser = await db.User.create({
+        member_provider: 'google',
+        member_provider_number: profile.id,
+        provide_image: avatar_url,
+        token: accessToken
+      })
+      if(newUser) {
+        done(null, newUser);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    done(error);
+  }
+}))
+
+*/
+console.log("페북아이디 : " + process.env.FACEBOOK_CLIENT_ID);
+console.log("페북시크릿  : " + process.env.FACEBOOK_CLIENT_SECRET);
+console.log("콜백url : " + process.env.FACEBOOK_CALLBACK_URL);
+passport_1.default.use(new FacebookStrategy({
+    clientID: process.env.FACEBOOK_CLIENT_ID,
+    clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+    callbackURL: process.env.FACEBOOK_CALLBACK_URL,
+    passReqToCallback: true
 }, (accessToken, refreshToken, profile, done) => __awaiter(this, void 0, void 0, function* () {
     const avatar_url = profile.photos[0] ? profile.photos[0].value : null;
     try {
-        const user = yield app_1.db.User.find({ where: { member_provider: 'google', member_provider_number: profile.id } });
+        const user = yield app_1.db.User.find({ where: { member_provider: 'facebook', member_provider_number: profile.id } });
         if (user) {
             done(null, user);
         }
         else {
             const newUser = yield app_1.db.User.create({
-                member_provider: 'google',
+                member_provider: 'facebook',
                 member_provider_number: profile.id,
                 provide_image: avatar_url,
                 token: accessToken
@@ -96,6 +138,27 @@ router.get('/success', middleware_1.loginRequired, (req, res) => {
 router.get('/google', passport_1.default.authenticate('google', { scope: ["profile", "email"] }));
 router.get('/google/callback', (req, res, next) => {
     passport_1.default.authenticate('google', (err, user) => {
+        if (err) {
+            // 예상치 못한 예외 발생 시
+            return next(err);
+        }
+        if (!user) {
+            // 로그인 실패 시
+            return res.redirect(req.baseUrl);
+        }
+        req.logIn(user, err => {
+            // 예상치 못한 예외 발생 시
+            if (err) {
+                return next(err);
+            }
+            // 로그인 성공
+            res.redirect(`${req.baseUrl}/success`);
+        });
+    })(req, res, next);
+});
+router.get('/facebook', passport_1.default.authenticate('facebook', { scope: ["profile", "email"] }));
+router.get('/facebook/callback', (req, res, next) => {
+    passport_1.default.authenticate('facebook', (err, user) => {
         if (err) {
             // 예상치 못한 예외 발생 시
             return next(err);
