@@ -9,17 +9,17 @@ import expressSession from "express-session";
 import cookieParser from "cookie-parser";
 import flash from "connect-flash";
 import jwt from "jsonwebtoken";
-import * as FacebookPassPort from 'passport-facebook';
-import { db }from "../../app";
-import { insertReq, insertToken, loginRequired} from "../../middleware";
+import * as FacebookPassport from 'passport-facebook';
+import { db } from "../../app";
+import { insertReq, insertToken, loginRequired } from "../../middleware";
 import { UserAttributes } from "../../models/user";
 
 const GoogleStrategy = require('passport-google-oauth20').Strategy
-const FacebookStrategy = FacebookPassPort.Strategy;
+const FacebookStrategy = FacebookPassport.Strategy;
 const router = express.Router();
 
 router.use(express.json());
-router.use(bodyParser.urlencoded({extended: false}));
+router.use(bodyParser.urlencoded({ extended: false }));
 router.use(cookieParser(process.env.SESSION_SECRET))
 router.use(expressSession({
   secret: `${process.env.SESSION_SECRET}`,
@@ -34,7 +34,7 @@ router.use(flash());
 router.use(passport.initialize());
 router.use(passport.session());
 
-passport.serializeUser((user: UserAttributes, done) => {
+passport.serializeUser<any, any>((user: any, done) => {
   done(null, `${user.member_provider}:${user.member_provider_number}`)
 });
 
@@ -49,7 +49,6 @@ passport.deserializeUser(async (str: String, done) => {
 });
 
 
-/*
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -77,17 +76,14 @@ passport.use(new GoogleStrategy({
   }
 }))
 
-*/
-console.log("페북아이디 : "+process.env.FACEBOOK_CLIENT_ID);
-console.log("페북시크릿  : "+process.env.FACEBOOK_CLIENT_SECRET);
-console.log("콜백url : "+process.env.FACEBOOK_CALLBACK_URL);
 passport.use(new FacebookStrategy({
   clientID : process.env.FACEBOOK_CLIENT_ID,
   clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-  callbackURL: process.env.FACEBOOK_CALLBACK_URL,
+  callbackURL:  process.env.FACEBOOK_CALLBACK_URL,
+  profileFields: ["email", "link", "locale", "timezone","photos"],
   passReqToCallback : true
-}, async(accessToken:any, refreshToken:any, profile:any ,done:any) => {
-  const avatar_url = profile.photos[0] ? profile.photos[0].value : null
+}, async (req : express.Request  ,accessToken : string ,refreshToken : string, profile ,done) => {
+  const avatar_url = profile.photos ? profile.photos[0].value : null
  try { 
    const user = await db.User.find({where : { member_provider : 'facebook', member_provider_number : profile.id  }})
    if(user) { 
@@ -113,15 +109,15 @@ router.get('/', (req: express.Request, res: express.Response) => {
   res.render('auth.pug')
 });
 
-router.get('/success', loginRequired, (req: express.Request, res: express.Response) =>{
+router.get('/success', loginRequired, (req: express.Request, res: express.Response) => {
   const token = jwt.sign({ 'id': req.user.id }, `${process.env.JWT_SECRET}`)
   res.render('success.pug', {
     token,
     'origin': process.env.TARGET_ORIGIN
   })
-}); 
+});
 
-router.get('/google', passport.authenticate('google', {scope: ["profile", "email"]}));
+router.get('/google', passport.authenticate('google', { scope: ["profile", "email"] }));
 
 router.get('/google/callback', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   passport.authenticate('google', (err, user) => {
@@ -145,10 +141,14 @@ router.get('/google/callback', (req: express.Request, res: express.Response, nex
 })
 
 
-router.get('/facebook', passport.authenticate('facebook', {scope: ["profile", "email"]}));
+router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 
 router.get('/facebook/callback', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  passport.authenticate('facebook', (err, user) => {
+  passport.authenticate('facebook', {
+    session: true,
+    failureRedirect: '/auth',
+
+  }, (err, user) => {
     if (err) {
       // 예상치 못한 예외 발생 시
       return next(err)
