@@ -10,15 +10,16 @@ import cookieParser from "cookie-parser";
 import flash from "connect-flash";
 import jwt from "jsonwebtoken";
 
-import { db }from "../../app";
-import { insertReq, insertToken, loginRequired} from "../../middleware";
+import { db } from "../../app";
+import { insertReq, insertToken, loginRequired } from "../../middleware";
 import { UserAttributes } from "../../models/user";
 
 const GoogleStrategy = require('passport-google-oauth20').Strategy
+const KakaoStrategy = require('passport-kakao').Strategy
 const router = express.Router();
 
 router.use(express.json());
-router.use(bodyParser.urlencoded({extended: false}));
+router.use(bodyParser.urlencoded({ extended: false }));
 router.use(cookieParser(process.env.SESSION_SECRET))
 router.use(expressSession({
   secret: `${process.env.SESSION_SECRET}`,
@@ -40,8 +41,8 @@ passport.serializeUser((user: UserAttributes, done) => {
 passport.deserializeUser(async (str: String, done) => {
   const [member_provider, member_provider_number] = str.split(':')
   try {
-    const user = await db.User.find({where: {member_provider, member_provider_number}})
-    if(user) { done(null, user)}  
+    const user = await db.User.find({ where: { member_provider, member_provider_number } })
+    if (user) { done(null, user) }
   } catch (error) {
     console.error(error);
   }
@@ -51,11 +52,11 @@ passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: process.env.GOOGLE_CALLBACK_URL
-},async (accessToken:any, refreshToken:any, profile:any ,done:any) => {
+}, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
   const avatar_url = profile.photos[0] ? profile.photos[0].value : null
   try {
-    const user = await db.User.find({where: {member_provider: 'google', member_provider_number: profile.id}})
-    if(user) {
+    const user = await db.User.find({ where: { member_provider: 'google', member_provider_number: profile.id } })
+    if (user) {
       done(null, user)
     } else {
       const newUser = await db.User.create({
@@ -64,29 +65,56 @@ passport.use(new GoogleStrategy({
         provide_image: avatar_url,
         token: accessToken
       })
-      if(newUser) {
+      if (newUser) {
         done(null, newUser);
       }
     }
   } catch (error) {
     console.error(error);
-    done(error);   
+    done(error);
   }
-}))
+}));
+
+passport.use('kakao', new KakaoStrategy({
+  clientID: process.env.KAKAO_CLIENT_ID,
+  callbackURL: process.env.KAKAO_CALLBACK_URL
+}, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
+  const avatar_url = profile.photos[0] ? profile.photos[0].value : null
+  try {
+    const user = await db.User.find({ where: { member_provider: 'kakao', member_provider_number: profile.id } })
+    if (user) {
+      done(null, user)
+    } else {
+      const newUser = await db.User.create({
+        member_provider: 'kakao',
+        member_provider_number: profile.id,
+        provide_image: avatar_url,
+        token: accessToken
+      })
+      if (newUser) {
+        done(null, newUser);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    done(error);
+  }
+}));
 
 router.get('/', (req: express.Request, res: express.Response) => {
   res.render('auth.pug')
 });
 
-router.get('/success', loginRequired, (req: express.Request, res: express.Response) =>{
+router.get('/success', loginRequired, (req: express.Request, res: express.Response) => {
   const token = jwt.sign({ 'id': req.user.id }, `${process.env.JWT_SECRET}`)
   res.render('success.pug', {
     token,
     'origin': process.env.TARGET_ORIGIN
   })
-}); 
+});
 
-router.get('/google', passport.authenticate('google', {scope: ["profile", "email"]}));
+router.get('/google', passport.authenticate('google', { scope: ["profile", "email"] }));
+router.get('/kakao', passport.authenticate('kakao', { failureRedirect: '#!/login' }));
 
 router.get('/google/callback', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   passport.authenticate('google', (err, user) => {
@@ -105,6 +133,24 @@ router.get('/google/callback', (req: express.Request, res: express.Response, nex
       }
       // 로그인 성공
       res.redirect(`${req.baseUrl}/success`)
+    })
+  })(req, res, next)
+})
+
+// Kakao callback url
+router.get('/oauth', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  passport.authenticate('kakao', (err, user) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.redirect(req.baseUrl);
+    }
+    req.logIn(user, err => {
+      if (err) {
+        return next(err);
+      }
+      res.redirect(`${req.baseUrl}/success`);
     })
   })(req, res, next)
 })
