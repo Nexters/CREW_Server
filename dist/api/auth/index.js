@@ -24,6 +24,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const app_1 = require("../../app");
 const middleware_1 = require("../../middleware");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const KakaoStrategy = require('passport-kakao').Strategy;
 const router = express_1.default.Router();
 router.use(express_1.default.json());
 router.use(body_parser_1.default.urlencoded({ extended: false }));
@@ -83,6 +84,33 @@ passport_1.default.use(new GoogleStrategy({
         done(error);
     }
 })));
+passport_1.default.use(new KakaoStrategy({
+    clientID: process.env.KAKAO_CLIENT_ID,
+    callbackURL: process.env.KAKAO_CALLBACK_URL
+}, (accessToken, refreshToken, profile, done) => __awaiter(this, void 0, void 0, function* () {
+    const avatar_url = profile.photos[0] ? profile.photos[0].value : null;
+    try {
+        const user = yield app_1.db.User.find({ where: { member_provider: 'kakao', member_provider_number: profile.id } });
+        if (user) {
+            done(null, user);
+        }
+        else {
+            const newUser = yield app_1.db.User.create({
+                member_provider: 'kakao',
+                member_provider_number: profile.id,
+                provide_image: avatar_url,
+                token: accessToken
+            });
+            if (newUser) {
+                done(null, newUser);
+            }
+        }
+    }
+    catch (error) {
+        console.error(error);
+        done(error);
+    }
+})));
 router.get('/', (req, res) => {
     res.render('auth.pug');
 });
@@ -94,6 +122,7 @@ router.get('/success', middleware_1.loginRequired, (req, res) => {
     });
 });
 router.get('/google', passport_1.default.authenticate('google', { scope: ["profile", "email"] }));
+router.get('/kakao', passport_1.default.authenticate('login-kakao'));
 router.get('/google/callback', (req, res, next) => {
     passport_1.default.authenticate('google', (err, user) => {
         if (err) {
