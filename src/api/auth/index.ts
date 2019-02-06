@@ -75,7 +75,7 @@ passport.use(new GoogleStrategy({
   }
 }));
 
-passport.use(new KakaoStrategy({
+passport.use('kakao', new KakaoStrategy({
   clientID: process.env.KAKAO_CLIENT_ID,
   callbackURL: process.env.KAKAO_CALLBACK_URL
 }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
@@ -114,7 +114,7 @@ router.get('/success', loginRequired, (req: express.Request, res: express.Respon
 });
 
 router.get('/google', passport.authenticate('google', { scope: ["profile", "email"] }));
-router.get('/kakao', passport.authenticate('kakao', { failureRedirect: '#!/login' }), users.signin);
+router.get('/kakao', passport.authenticate('kakao', { failureRedirect: '#!/login' }));
 
 router.get('/google/callback', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   passport.authenticate('google', (err, user) => {
@@ -152,8 +152,7 @@ router.get('/oauth', (req: express.Request, res: express.Response, next: express
       }
       res.redirect(`${req.baseUrl}/success`);
     })
-  })
-});
-
+  })(req, res, next)
+})
 
 export default router;

@@ -84,7 +84,7 @@ passport_1.default.use(new GoogleStrategy({
         done(error);
     }
 })));
-passport_1.default.use(new KakaoStrategy({
+passport_1.default.use('kakao', new KakaoStrategy({
     clientID: process.env.KAKAO_CLIENT_ID,
     callbackURL: process.env.KAKAO_CALLBACK_URL
 }, (accessToken, refreshToken, profile, done) => __awaiter(this, void 0, void 0, function* () {
@@ -122,7 +122,7 @@ router.get('/success', middleware_1.loginRequired, (req, res) => {
     });
 });
 router.get('/google', passport_1.default.authenticate('google', { scope: ["profile", "email"] }));
-router.get('/kakao', passport_1.default.authenticate('login-kakao'));
+router.get('/kakao', passport_1.default.authenticate('kakao', { failureRedirect: '#!/login' }));
 router.get('/google/callback', (req, res, next) => {
     passport_1.default.authenticate('google', (err, user) => {
         if (err) {
@@ -139,6 +139,23 @@ router.get('/google/callback', (req, res, next) => {
                 return next(err);
             }
             // 로그인 성공
+            res.redirect(`${req.baseUrl}/success`);
+        });
+    })(req, res, next);
+});
+// Kakao callback url
+router.get('/oauth', (req, res, next) => {
+    passport_1.default.authenticate('kakao', (err, user) => {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            return res.redirect(req.baseUrl);
+        }
+        req.logIn(user, err => {
+            if (err) {
+                return next(err);
+            }
             res.redirect(`${req.baseUrl}/success`);
         });
     })(req, res, next);
