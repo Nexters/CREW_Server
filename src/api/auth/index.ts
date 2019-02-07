@@ -15,6 +15,7 @@ import { insertReq, insertToken, loginRequired } from "../../middleware";
 import { UserAttributes } from "../../models/user";
 
 const GoogleStrategy = require('passport-google-oauth20').Strategy
+const KakaoStrategy = require('passport-kakao').Strategy
 const FacebookStrategy = FacebookPassport.Strategy;
 const router = express.Router();
 
@@ -53,11 +54,11 @@ passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: process.env.GOOGLE_CALLBACK_URL
-},async (accessToken:any, refreshToken:any, profile:any ,done:any) => {
+}, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
   const avatar_url = profile.photos[0] ? profile.photos[0].value : null
   try {
-    const user = await db.User.find({where: {member_provider: 'google', member_provider_number: profile.id}})
-    if(user) {
+    const user = await db.User.find({ where: { member_provider: 'google', member_provider_number: profile.id } })
+    if (user) {
       done(null, user)
     } else {
       const newUser = await db.User.create({
@@ -66,15 +67,41 @@ passport.use(new GoogleStrategy({
         provide_image: avatar_url,
         token: accessToken
       })
-      if(newUser) {
+      if (newUser) {
         done(null, newUser);
       }
     }
   } catch (error) {
     console.error(error);
-    done(error);   
+    done(error);
   }
-}))
+}));
+
+passport.use('kakao', new KakaoStrategy({
+  clientID: process.env.KAKAO_CLIENT_ID,
+  callbackURL: process.env.KAKAO_CALLBACK_URL
+}, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
+  const avatar_url = profile.photos[0] ? profile.photos[0].value : null
+  try {
+    const user = await db.User.find({ where: { member_provider: 'kakao', member_provider_number: profile.id } })
+    if (user) {
+      done(null, user)
+    } else {
+      const newUser = await db.User.create({
+        member_provider: 'kakao',
+        member_provider_number: profile.id,
+        provide_image: avatar_url,
+        token: accessToken
+      })
+      if (newUser) {
+        done(null, newUser);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    done(error);
+  }
+}));
 
 passport.use(new FacebookStrategy({
   clientID : process.env.FACEBOOK_CLIENT_ID,
@@ -139,7 +166,26 @@ router.get('/google/callback', (req: express.Request, res: express.Response, nex
     })
   })(req, res, next)
 })
-
+  
+router.get('/kakao', passport.authenticate('kakao', { failureRedirect: '#!/login' }));
+  
+// Kakao callback url
+router.get('/kakao/callback', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  passport.authenticate('kakao', (err, user) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.redirect(req.baseUrl);
+    }
+    req.logIn(user, err => {
+      if (err) {
+        return next(err);
+      }
+      res.redirect(`${req.baseUrl}/success`);    
+    })
+  })(req, res, next)
+})
 
 router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 
@@ -169,4 +215,3 @@ router.get('/facebook/callback', (req: express.Request, res: express.Response, n
 })
 
 export default router;
-
