@@ -35,7 +35,7 @@ router.use(flash());
 router.use(passport.initialize());
 router.use(passport.session());
 
-passport.serializeUser<any, any>((user: any, done) => {
+passport.serializeUser((user: UserAttributes, done) => {
   done(null, `${user.member_provider}:${user.member_provider_number}`)
 });
 
@@ -79,9 +79,10 @@ passport.use(new GoogleStrategy({
 
 passport.use('kakao', new KakaoStrategy({
   clientID: process.env.KAKAO_CLIENT_ID,
+  clientSecret: process.env.KAKAO_CLIENT_SECRET,
   callbackURL: process.env.KAKAO_CALLBACK_URL
 }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
-  const avatar_url = profile.photos[0] ? profile.photos[0].value : null
+  const avatar_url = profile._json.properties.profile_image ? profile._json.properties.profile_image : null
   try {
     const user = await db.User.find({ where: { member_provider: 'kakao', member_provider_number: profile.id } })
     if (user) {
@@ -192,8 +193,7 @@ router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }))
 router.get('/facebook/callback', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   passport.authenticate('facebook', {
     session: true,
-    failureRedirect: '/auth',
-
+    failureRedirect: '/auth'
   }, (err, user) => {
     if (err) {
       // 예상치 못한 예외 발생 시
