@@ -20,8 +20,8 @@ export interface FormAttributes {
   question_num: number;
   description?: string;
   type: FormType;
-  created_at?: Date;
-  updated_at?: Date;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface FormInstance extends Sequelize.Instance<FormAttributes>, FormAttributes {
@@ -50,6 +50,12 @@ export const FormFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
     },
     type: {
       type: DataTypes.ENUM(FormType.Short_Answer, FormType.Long_Answer, FormType.Selector, FormType.Upload)
+    },
+    created_at: {
+      type: DataTypes.DATE
+    },
+    updated_at: {
+      type: DataTypes.DATE
     }
   };
   const Form = sequelize.define<FormInstance, FormAttributes>('Form', attributes);

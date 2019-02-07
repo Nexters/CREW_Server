@@ -6,8 +6,8 @@ import { FormInstance, FormAttributes } from "./form";
 export interface ResumeAttributes {
   id: number;
   answer?: string;
-  created_at?: Date;
-  updated_at?: Date;
+  created_at: Date;
+  updated_at: Date;
 }
 
 
@@ -29,6 +29,12 @@ export const ResumeFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequeli
     },
     answer: {
       type: DataTypes.STRING
+    },
+    created_at: {
+      type: DataTypes.DATE
+    },
+    updated_at: {
+      type: DataTypes.DATE
     }
   };
   const Resume = sequelize.define<ResumeInstance, ResumeAttributes>('Resume', attributes);

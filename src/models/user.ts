@@ -21,8 +21,8 @@ export interface UserAttributes {
   provide_image?: string;
   status?: ApplicantStatus;
   token: string;
-  created_at?: Date;
-  updated_at?: Date;
+  created_at: Date;
+  updated_at: Date;
 };
 
 
@@ -67,6 +67,12 @@ export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
     },
     token: {
       type: DataTypes.STRING
+    },
+    created_at: {
+      type: DataTypes.DATE
+    },
+    updated_at: {
+      type: DataTypes.DATE
     }
   };
   const User = sequelize.define<UserInstance,UserAttributes>('User', attributes);
