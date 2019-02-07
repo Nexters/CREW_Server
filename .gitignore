@@ -61,3 +61,6 @@ gkey.json
 
 # vscode 제거
 .vscode/
+
+# .idea 제거
+.idea/

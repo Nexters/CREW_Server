@@ -1,14 +1,16 @@
 import express from "express";
 import user from "./api/user/index";
+import auth from "./api/auth/index";
 import { createModels } from "./models/index";
 
 const env = process.env.NODE_ENV || 'development';
 const config = require("./config/config")[env];
-// config.dialect = 'mysql';
-export const db = createModels(config);
 const app = express();
+export const db = createModels(config);
 
 app.use('/user', user);
+app.use('/auth', auth);
+app.set('view engine', 'pug')
 
 app.get('/', (req: express.Request, res: express.Response) => {
   res.send('success router');
