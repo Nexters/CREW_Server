@@ -1,5 +1,6 @@
 import Sequelize from "sequelize";
 import { SequelizeAttributes } from "./index.d";
+import { ResumeInstance, ResumeAttributes } from "./resume";
 
 enum ApplicantStatus {
   Applicant = "applicant",
@@ -26,7 +27,12 @@ export interface UserAttributes {
 
 
 export interface UserInstance extends Sequelize.Instance<UserAttributes>, UserAttributes {
-  // Sequelize Instance Method가 추가된다.
+  getResume: Sequelize.HasManyGetAssociationsMixin<ResumeInstance>;
+  setResume: Sequelize.HasManySetAssociationsMixin<ResumeInstance, ResumeInstance['id']>;
+  addResume: Sequelize.HasManyAddAssociationMixin<ResumeInstance, ResumeInstance['id']>;
+  createResume: Sequelize.HasManyCreateAssociationMixin<ResumeAttributes, ResumeInstance>;
+  removeResume: Sequelize.HasManyRemoveAssociationMixin<ResumeInstance, ResumeInstance['id']>;
+  hasResume: Sequelize.HasManyHasAssociationMixin<ResumeInstance, ResumeInstance['id']>;
 };
 
 export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize.DataTypes): Sequelize.Model<UserInstance,UserAttributes> => {
@@ -60,5 +66,9 @@ export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
     }
   };
   const User = sequelize.define<UserInstance,UserAttributes>('User', attributes);
+
+  User.associate = models => {
+    User.hasMany(models.Resume, {foreignKey: 'user_id'});
+  }
   return User;
 };

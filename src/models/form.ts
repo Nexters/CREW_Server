@@ -1,5 +1,6 @@
 import Sequelize from "sequelize"
 import { SequelizeAttributes } from "./index.d";
+import { ResumeInstance, ResumeAttributes } from "./resume";
 
 enum FormType {
   Short_Answer = "Short_Answer",
@@ -24,7 +25,12 @@ export interface FormAttributes {
 }
 
 export interface FormInstance extends Sequelize.Instance<FormAttributes>, FormAttributes {
- 
+  getResume: Sequelize.HasManyGetAssociationsMixin<ResumeInstance>;
+  setResume: Sequelize.HasManySetAssociationsMixin<ResumeInstance, ResumeInstance['id']>;
+  addResume: Sequelize.HasManyAddAssociationMixin<ResumeInstance, ResumeInstance['id']>;
+  createResume: Sequelize.HasManyCreateAssociationMixin<ResumeAttributes, ResumeInstance>;
+  removeResume: Sequelize.HasManyRemoveAssociationMixin<ResumeInstance, ResumeInstance['id']>;
+  hasResume: Sequelize.HasManyHasAssociationMixin<ResumeInstance, ResumeInstance['id']>;
 };
 
 export const FormFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize.DataTypes): Sequelize.Model<FormInstance, FormAttributes> => {
@@ -43,7 +49,6 @@ export const FormFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
     }
   };
   const Form = sequelize.define<FormInstance, FormAttributes>('Form', attributes);
-  
   Form.associate = models => {
     Form.hasMany(models.Resume, {foreignKey: 'form_id'});
   }
