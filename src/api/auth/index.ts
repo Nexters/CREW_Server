@@ -9,13 +9,14 @@ import expressSession from "express-session";
 import cookieParser from "cookie-parser";
 import flash from "connect-flash";
 import jwt from "jsonwebtoken";
-
+import * as FacebookPassport from 'passport-facebook';
 import { db } from "../../app";
 import { insertReq, insertToken, loginRequired } from "../../middleware";
 import { UserAttributes } from "../../models/user";
 
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const KakaoStrategy = require('passport-kakao').Strategy
+const FacebookStrategy = FacebookPassport.Strategy;
 const router = express.Router();
 
 router.use(express.json());
@@ -34,19 +35,20 @@ router.use(flash());
 router.use(passport.initialize());
 router.use(passport.session());
 
-passport.serializeUser((user: UserAttributes, done) => {
+passport.serializeUser<any, any>((user: any, done) => {
   done(null, `${user.member_provider}:${user.member_provider_number}`)
 });
 
 passport.deserializeUser(async (str: String, done) => {
   const [member_provider, member_provider_number] = str.split(':')
-  try {
-    const user = await db.User.find({ where: { member_provider, member_provider_number } })
-    if (user) { done(null, user) }
+  try { 
+    const user = await db.User.find({where: {member_provider, member_provider_number}})
+    if(user) { done(null, user)}  
   } catch (error) {
     console.error(error);
   }
 });
+
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
@@ -101,6 +103,35 @@ passport.use('kakao', new KakaoStrategy({
   }
 }));
 
+passport.use(new FacebookStrategy({
+  clientID : process.env.FACEBOOK_CLIENT_ID,
+  clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+  callbackURL:  process.env.FACEBOOK_CALLBACK_URL,
+  profileFields: ["email", "link", "locale", "timezone","photos"],
+  passReqToCallback : true
+}, async (req : express.Request  ,accessToken : string ,refreshToken : string, profile ,done) => {
+  const avatar_url = profile.photos ? profile.photos[0].value : null
+ try { 
+   const user = await db.User.find({where : { member_provider : 'facebook', member_provider_number : profile.id  }})
+   if(user) { 
+     done(null, user) 
+   }else{
+     const newUser = await db.User.create({
+       member_provider : 'facebook' ,
+       member_provider_number : profile.id,
+       provide_image: avatar_url,
+       token : accessToken
+     })
+     if(newUser) {
+       done(null,newUser) ; 
+     }
+   }
+ }catch(error){
+   console.error(error); 
+   done(error); 
+ }
+}))
+
 router.get('/', (req: express.Request, res: express.Response) => {
   res.render('auth.pug')
 });
@@ -114,7 +145,6 @@ router.get('/success', loginRequired, (req: express.Request, res: express.Respon
 });
 
 router.get('/google', passport.authenticate('google', { scope: ["profile", "email"] }));
-router.get('/kakao', passport.authenticate('kakao', { failureRedirect: '#!/login' }));
 
 router.get('/google/callback', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   passport.authenticate('google', (err, user) => {
@@ -136,7 +166,9 @@ router.get('/google/callback', (req: express.Request, res: express.Response, nex
     })
   })(req, res, next)
 })
-
+  
+router.get('/kakao', passport.authenticate('kakao', { failureRedirect: '#!/login' }));
+  
 // Kakao callback url
 router.get('/kakao/callback', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   passport.authenticate('kakao', (err, user) => {
@@ -150,7 +182,34 @@ router.get('/kakao/callback', (req: express.Request, res: express.Response, next
       if (err) {
         return next(err);
       }
-      res.redirect(`${req.baseUrl}/success`);
+      res.redirect(`${req.baseUrl}/success`);    
+    })
+  })(req, res, next)
+})
+
+router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
+
+router.get('/facebook/callback', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  passport.authenticate('facebook', {
+    session: true,
+    failureRedirect: '/auth',
+
+  }, (err, user) => {
+    if (err) {
+      // 예상치 못한 예외 발생 시
+      return next(err)
+    }
+    if (!user) {
+      // 로그인 실패 시
+      return res.redirect(req.baseUrl)
+    }
+    req.logIn(user, err => {
+      // 예상치 못한 예외 발생 시
+      if (err) {
+        return next(err)
+      }
+      // 로그인 성공
+      res.redirect(`${req.baseUrl}/success`)
     })
   })(req, res, next)
 })
