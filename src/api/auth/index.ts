@@ -138,7 +138,7 @@ router.get('/google/callback', (req: express.Request, res: express.Response, nex
 })
 
 // Kakao callback url
-router.get('/oauth', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.get('/kakao/callback', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   passport.authenticate('kakao', (err, user) => {
     if (err) {
       return next(err);
