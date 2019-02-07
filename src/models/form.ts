@@ -15,7 +15,7 @@ enum JobType {
 }
 
 export interface FormAttributes {
-  id?: number;
+  id: number;
   job: JobType;
   question_num: number;
   description?: string;
@@ -35,6 +35,10 @@ export interface FormInstance extends Sequelize.Instance<FormAttributes>, FormAt
 
 export const FormFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize.DataTypes): Sequelize.Model<FormInstance, FormAttributes> => {
   const attributes: SequelizeAttributes<FormAttributes> = {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     job: {
       type: DataTypes.ENUM(JobType.Developer, JobType.Designer)
     },

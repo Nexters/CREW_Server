@@ -11,7 +11,7 @@ enum ApplicantStatus {
 }
 
 export interface UserAttributes {
-  id?: number;
+  id: number;
   name?: string;
   member_provider: string;
   member_provider_number: string;
@@ -37,6 +37,10 @@ export interface UserInstance extends Sequelize.Instance<UserAttributes>, UserAt
 
 export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize.DataTypes): Sequelize.Model<UserInstance,UserAttributes> => {
   const attributes: SequelizeAttributes<UserAttributes> = {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     name: {
       type: DataTypes.STRING
     },
