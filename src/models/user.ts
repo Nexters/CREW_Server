@@ -1,6 +1,7 @@
 import Sequelize from "sequelize";
 import { SequelizeAttributes } from "./index.d";
 import { ResumeInstance, ResumeAttributes } from "./resume";
+import { EvaluationAttributes, EvaluationInstance } from "./evaluation";
 
 enum ApplicantStatus {
   Applicant = "applicant",
@@ -33,6 +34,13 @@ export interface UserInstance extends Sequelize.Instance<UserAttributes>, UserAt
   createResume: Sequelize.HasManyCreateAssociationMixin<ResumeAttributes, ResumeInstance>;
   removeResume: Sequelize.HasManyRemoveAssociationMixin<ResumeInstance, ResumeInstance['id']>;
   hasResume: Sequelize.HasManyHasAssociationMixin<ResumeInstance, ResumeInstance['id']>;
+  
+  getEvaluation: Sequelize.HasOneGetAssociationMixin<EvaluationInstance>;
+  setEvaluation: Sequelize.HasManySetAssociationsMixin<EvaluationInstance, EvaluationInstance['id']>;
+  addEvaluation: Sequelize.HasManyAddAssociationMixin<EvaluationInstance, EvaluationInstance['id']>;
+  createEvaluation: Sequelize.HasManyCreateAssociationMixin<EvaluationAttributes, EvaluationInstance>;
+  removeEvaluation: Sequelize.HasManyRemoveAssociationMixin<EvaluationInstance, EvaluationInstance['id']>;
+  hasEvaluation: Sequelize.HasManyHasAssociationMixin<EvaluationInstance, EvaluationInstance['id']>;
 };
 
 export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize.DataTypes): Sequelize.Model<UserInstance,UserAttributes> => {
@@ -69,6 +77,8 @@ export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
 
   User.associate = models => {
     User.hasMany(models.Resume, {foreignKey: 'user_id'});
+    User.hasMany(models.Evaluation, {foreignKey: 'user_id'});
+    User.hasMany(models.Evaluation, {foreignKey: 'user_admin_id'});
   }
   return User;
 };
