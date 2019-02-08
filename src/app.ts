@@ -5,6 +5,7 @@ import { createModels } from "./models/index";
 
 const env = process.env.NODE_ENV || 'development';
 const config = require("./config/config")[env];
+config.freezeTableName = true;
 const app = express();
 export const db = createModels(config);
 

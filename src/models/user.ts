@@ -11,7 +11,7 @@ enum ApplicantStatus {
 }
 
 export interface UserAttributes {
-  id: number;
+  id?: number;
   name?: string;
   member_provider: string;
   member_provider_number: string;
@@ -21,8 +21,8 @@ export interface UserAttributes {
   provide_image?: string;
   status?: ApplicantStatus;
   token: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at?: Date;
+  updated_at?: Date;
 };
 
 
@@ -37,10 +37,6 @@ export interface UserInstance extends Sequelize.Instance<UserAttributes>, UserAt
 
 export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize.DataTypes): Sequelize.Model<UserInstance,UserAttributes> => {
   const attributes: SequelizeAttributes<UserAttributes> = {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true
-    },
     name: {
       type: DataTypes.STRING
     },
@@ -67,12 +63,6 @@ export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
     },
     token: {
       type: DataTypes.STRING
-    },
-    created_at: {
-      type: DataTypes.DATE
-    },
-    updated_at: {
-      type: DataTypes.DATE
     }
   };
   const User = sequelize.define<UserInstance,UserAttributes>('User', attributes);

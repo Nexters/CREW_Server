@@ -4,10 +4,10 @@ import { UserInstance, UserAttributes } from "./user";
 import { FormInstance, FormAttributes } from "./form";
 
 export interface ResumeAttributes {
-  id: number;
+  id?: number;
   answer?: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 
@@ -23,18 +23,8 @@ export interface ResumeInstance extends Sequelize.Instance<ResumeAttributes>, Re
 
 export const ResumeFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize.DataTypes): Sequelize.Model<ResumeInstance, ResumeAttributes> => {
   const attributes: SequelizeAttributes<ResumeAttributes> = {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true
-    },
     answer: {
       type: DataTypes.STRING
-    },
-    created_at: {
-      type: DataTypes.DATE
-    },
-    updated_at: {
-      type: DataTypes.DATE
     }
   };
   const Resume = sequelize.define<ResumeInstance, ResumeAttributes>('Resume', attributes);

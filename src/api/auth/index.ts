@@ -35,7 +35,7 @@ router.use(flash());
 router.use(passport.initialize());
 router.use(passport.session());
 
-passport.serializeUser((user: UserAttributes, done) => {
+passport.serializeUser((user:UserAttributes, done) => {
   done(null, `${user.member_provider}:${user.member_provider_number}`)
 });
 
@@ -65,7 +65,7 @@ passport.use(new GoogleStrategy({
         member_provider: 'google',
         member_provider_number: profile.id,
         provide_image: avatar_url,
-        token: accessToken
+        token: accessToken,
       })
       if (newUser) {
         done(null, newUser);
