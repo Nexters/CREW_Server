@@ -9,6 +9,7 @@ const index_2 = __importDefault(require("./api/auth/index"));
 const index_3 = require("./models/index");
 const env = process.env.NODE_ENV || 'development';
 const config = require("./config/config")[env];
+config.freezeTableName = true;
 const app = express_1.default();
 exports.db = index_3.createModels(config);
 app.use('/user', index_1.default);
