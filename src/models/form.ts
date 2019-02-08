@@ -22,15 +22,20 @@ export interface FormAttributes {
   type: FormType;
   created_at?: Date;
   updated_at?: Date;
+  resumes?: ResumeAttributes[] | ResumeAttributes['id'][];
 }
 
 export interface FormInstance extends Sequelize.Instance<FormAttributes>, FormAttributes {
   getResume: Sequelize.HasManyGetAssociationsMixin<ResumeInstance>;
   setResume: Sequelize.HasManySetAssociationsMixin<ResumeInstance, ResumeInstance['id']>;
   addResume: Sequelize.HasManyAddAssociationMixin<ResumeInstance, ResumeInstance['id']>;
+  addResumes: Sequelize.HasManyAddAssociationsMixin<ResumeInstance, ResumeInstance['id']>;
   createResume: Sequelize.HasManyCreateAssociationMixin<ResumeAttributes, ResumeInstance>;
   removeResume: Sequelize.HasManyRemoveAssociationMixin<ResumeInstance, ResumeInstance['id']>;
+  removeResumes: Sequelize.HasManyRemoveAssociationsMixin<ResumeInstance, ResumeInstance['id']>;
   hasResume: Sequelize.HasManyHasAssociationMixin<ResumeInstance, ResumeInstance['id']>;
+  hasResumes: Sequelize.HasManyHasAssociationsMixin<ResumeInstance, ResumeInstance['id']>;
+  countResumes: Sequelize.HasManyCountAssociationsMixin;
 };
 
 export const FormFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize.DataTypes): Sequelize.Model<FormInstance, FormAttributes> => {

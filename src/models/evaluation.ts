@@ -8,6 +8,8 @@ export interface EvaluationAttributes {
   comment?: string;
   created_at?: Date;
   updated_at?: Date;
+  user_id?: UserAttributes | UserAttributes['id'];
+  user_admin_id?: UserAttributes | UserAttributes['id'];
 }
 
 export interface EvaluationInstance extends Sequelize.Instance<EvaluationAttributes>, EvaluationAttributes {
