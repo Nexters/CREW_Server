@@ -21,6 +21,7 @@
     "express-session": "^1.15.6",
     "jsonwebtoken": "^8.4.0",
     "mysql2": "^1.6.4",
+    "nodemailer": "^5.1.1",
     "nodemon": "^1.18.9",
     "passport": "^0.4.0",
     "passport-facebook": "^3.0.0",
@@ -29,7 +30,8 @@
     "pug": "^2.0.3",
     "request": "^2.88.0",
     "sequelize": "^4.42.0",
-    "sequelize-cli": "^5.4.0"
+    "sequelize-cli": "^5.4.0",
+    "ts-node": "^8.0.2"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
