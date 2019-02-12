@@ -11,6 +11,17 @@ enum ApplicantStatus {
   Admin = "admin"
 }
 
+enum JobType {
+  Student = "Student",
+  Prepare = "Prepare",
+  Worker = "Worker"
+}
+
+enum PositionType {
+  Developer = "Developer",
+  Designer = "Designer"
+}
+
 export interface UserAttributes {
   id?: number;
   name?: string;
@@ -19,6 +30,8 @@ export interface UserAttributes {
   age?: number;
   phone_number?: string;
   email?: string;
+  job?: JobType;
+  position?: PositionType;
   provide_image?: string;
   status?: ApplicantStatus;
   token: string;
@@ -72,6 +85,12 @@ export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
     },
     email: {
       type: DataTypes.STRING
+    },
+    job: {
+      type: DataTypes.ENUM(JobType.Student, JobType.Prepare, JobType.Worker)
+    },
+    position: {
+      type: DataTypes.ENUM(PositionType.Developer, PositionType.Designer)
     },
     provide_image: {
       type: DataTypes.STRING
