@@ -12,14 +12,14 @@ enum ApplicantStatus {
 }
 
 enum JobType {
-  Developer = "Developer",
-  Designer = "Designer"
-}
-
-enum PositionType {
   Student = "Student",
   Prepare = "Prepare",
   Worker = "Worker"
+}
+
+enum PositionType {
+  Developer = "Developer",
+  Designer = "Designer"
 }
 
 export interface UserAttributes {
@@ -87,10 +87,10 @@ export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
       type: DataTypes.STRING
     },
     job: {
-      type: DataTypes.ENUM(JobType.Developer, JobType.Designer)
+      type: DataTypes.ENUM(JobType.Student, JobType.Prepare, JobType.Worker)
     },
     position: {
-      type: DataTypes.ENUM(PositionType.Student, PositionType.Prepare, PositionType.Worker)
+      type: DataTypes.ENUM(PositionType.Developer, PositionType.Designer)
     },
     provide_image: {
       type: DataTypes.STRING
