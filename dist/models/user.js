@@ -8,6 +8,17 @@ var ApplicantStatus;
     ApplicantStatus["Fail"] = "fail";
     ApplicantStatus["Admin"] = "admin";
 })(ApplicantStatus || (ApplicantStatus = {}));
+var JobType;
+(function (JobType) {
+    JobType["Student"] = "Student";
+    JobType["Prepare"] = "Prepare";
+    JobType["Worker"] = "Worker";
+})(JobType || (JobType = {}));
+var PositionType;
+(function (PositionType) {
+    PositionType["Developer"] = "Developer";
+    PositionType["Designer"] = "Designer";
+})(PositionType || (PositionType = {}));
 ;
 ;
 exports.UserFactory = (sequelize, DataTypes) => {
@@ -29,6 +40,12 @@ exports.UserFactory = (sequelize, DataTypes) => {
         },
         email: {
             type: DataTypes.STRING
+        },
+        job: {
+            type: DataTypes.ENUM(JobType.Student, JobType.Prepare, JobType.Worker)
+        },
+        position: {
+            type: DataTypes.ENUM(PositionType.Developer, PositionType.Designer)
         },
         provide_image: {
             type: DataTypes.STRING

@@ -10,13 +10,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const app_1 = require("../../app");
+const query = __importStar(require("../../query"));
 const router = express_1.default.Router();
-router.get('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
+router.get('/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
     const id = req.params.id;
-    const user = yield app_1.db.User.find({ where: { id } });
+    const user = yield query.findUserById({ id });
     res.send(user);
 }));
 exports.default = router;

@@ -1,6 +1,12 @@
 import { db } from "./app";
 
 
+export async function findUserById({id}) {
+  const user = await db.User.findByPk(id);
+  if(!user) { return null }
+  return user;
+};
+
 export async function findUserByProvider({ 
   member_provider,
   member_provider_number
