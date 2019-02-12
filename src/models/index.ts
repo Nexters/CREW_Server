@@ -3,6 +3,7 @@ import { DbInterface } from "../db/DbInterface/index";
 import { UserFactory } from "./user";
 import { FormFactory } from "./form";
 import { ResumeFactory } from "./resume";
+import { EvaluationFactory } from "./evaluation";
 
 export const createModels = (sequelizeConfig: any): DbInterface => {
   
@@ -13,7 +14,8 @@ export const createModels = (sequelizeConfig: any): DbInterface => {
     Sequelize,
     User: UserFactory(sequelize, Sequelize),
     Form: FormFactory(sequelize, Sequelize),
-    Resume: ResumeFactory(sequelize, Sequelize)
+    Resume: ResumeFactory(sequelize, Sequelize),
+    Evaluation: EvaluationFactory(sequelize, Sequelize)
   };
 
   Object.keys(db).forEach(modelName => {

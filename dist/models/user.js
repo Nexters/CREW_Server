@@ -41,6 +41,11 @@ exports.UserFactory = (sequelize, DataTypes) => {
         }
     };
     const User = sequelize.define('User', attributes);
+    User.associate = models => {
+        User.hasMany(models.Resume, { foreignKey: 'user_id' });
+        User.hasMany(models.Evaluation, { foreignKey: 'user_id' });
+        User.hasMany(models.Evaluation, { foreignKey: 'user_admin_id' });
+    };
     return User;
 };
 //# sourceMappingURL=user.js.map
