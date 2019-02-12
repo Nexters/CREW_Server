@@ -23,6 +23,7 @@
     "mysql2": "^1.6.4",
     "nodemon": "^1.18.9",
     "passport": "^0.4.0",
+    "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^1.0.0",
     "passport-kakao": "0.0.5",
     "pug": "^2.0.3",

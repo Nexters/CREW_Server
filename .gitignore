@@ -64,3 +64,5 @@ gkey.json
 
 # .idea 제거
 .idea/
+
+dist/
