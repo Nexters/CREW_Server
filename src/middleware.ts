@@ -20,3 +20,11 @@ export function insertToken(req: express.Request, res: express.Response, next: e
   res.locals.csrfToken = req.csrfToken();
   next();
 }
+
+export const jsonMiddleware = bodyParser.json()
+
+export const urlencodedMiddleware = bodyParser.urlencoded({ 'extended': false })
+
+export const expressJwt = expressJWT({ 'secret': process.env.JWT_SECRET });
+
+export const corsMiddleware = cors({ 'origin': process.env.TARGET_ORIGIN });
