@@ -45,4 +45,14 @@ function createUser({ member_provider, member_provider_number, provide_image, to
     });
 }
 exports.createUser = createUser;
+function findResumesByUserId({ user_id }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const resumes = yield app_1.db.Resume.findAll({ where: { user_id } });
+        if (!resumes) {
+            return null;
+        }
+        return resumes;
+    });
+}
+exports.findResumesByUserId = findResumesByUserId;
 //# sourceMappingURL=query.js.map
