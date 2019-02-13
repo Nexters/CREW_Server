@@ -1,12 +1,11 @@
 import express from "express";
-import { db } from "../../app";
-import { ResumeInstance } from "../../models/resume";
+import * as query from "../../query";
 
 const router = express.Router();
 
-router.get('/', async (req: express.Request, res: express.Response) => {
+router.get('/:id', async (req: express.Request, res: express.Response) => {
   const id = req.params.id;
-  const user = await db.User.find({where: {id}});
+  const user = await query.findUserById({id});
   res.send(user);
 });
 

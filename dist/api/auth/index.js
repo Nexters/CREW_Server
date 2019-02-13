@@ -29,8 +29,8 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const connect_flash_1 = __importDefault(require("connect-flash"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const FacebookPassport = __importStar(require("passport-facebook"));
-const app_1 = require("../../app");
 const middleware_1 = require("../../middleware");
+const query = __importStar(require("../../query"));
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const KakaoStrategy = require('passport-kakao').Strategy;
 const FacebookStrategy = FacebookPassport.Strategy;
@@ -56,7 +56,7 @@ passport_1.default.serializeUser((user, done) => {
 passport_1.default.deserializeUser((str, done) => __awaiter(this, void 0, void 0, function* () {
     const [member_provider, member_provider_number] = str.split(':');
     try {
-        const user = yield app_1.db.User.find({ where: { member_provider, member_provider_number } });
+        const user = yield query.findUserByProvider({ member_provider, member_provider_number });
         if (user) {
             done(null, user);
         }
@@ -72,16 +72,16 @@ passport_1.default.use(new GoogleStrategy({
 }, (accessToken, refreshToken, profile, done) => __awaiter(this, void 0, void 0, function* () {
     const avatar_url = profile.photos[0] ? profile.photos[0].value : null;
     try {
-        const user = yield app_1.db.User.find({ where: { member_provider: 'google', member_provider_number: profile.id } });
+        const user = yield query.findUserByProvider({ member_provider: 'google', member_provider_number: profile.id });
         if (user) {
             done(null, user);
         }
         else {
-            const newUser = yield app_1.db.User.create({
+            const newUser = yield query.createUser({
                 member_provider: 'google',
                 member_provider_number: profile.id,
                 provide_image: avatar_url,
-                token: accessToken,
+                token: accessToken
             });
             if (newUser) {
                 done(null, newUser);
@@ -100,12 +100,12 @@ passport_1.default.use('kakao', new KakaoStrategy({
 }, (accessToken, refreshToken, profile, done) => __awaiter(this, void 0, void 0, function* () {
     const avatar_url = profile._json.properties.profile_image ? profile._json.properties.profile_image : null;
     try {
-        const user = yield app_1.db.User.find({ where: { member_provider: 'kakao', member_provider_number: profile.id } });
+        const user = yield query.findUserByProvider({ member_provider: 'kakao', member_provider_number: profile.id });
         if (user) {
             done(null, user);
         }
         else {
-            const newUser = yield app_1.db.User.create({
+            const newUser = yield query.createUser({
                 member_provider: 'kakao',
                 member_provider_number: profile.id,
                 provide_image: avatar_url,
@@ -130,12 +130,12 @@ passport_1.default.use(new FacebookStrategy({
 }, (req, accessToken, refreshToken, profile, done) => __awaiter(this, void 0, void 0, function* () {
     const avatar_url = profile.photos ? profile.photos[0].value : null;
     try {
-        const user = yield app_1.db.User.find({ where: { member_provider: 'facebook', member_provider_number: profile.id } });
+        const user = yield query.findUserByProvider({ member_provider: 'facebook', member_provider_number: profile.id });
         if (user) {
             done(null, user);
         }
         else {
-            const newUser = yield app_1.db.User.create({
+            const newUser = yield query.createUser({
                 member_provider: 'facebook',
                 member_provider_number: profile.id,
                 provide_image: avatar_url,

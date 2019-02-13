@@ -7,16 +7,16 @@ var FormType;
     FormType["Selector"] = "Seletor";
     FormType["Upload"] = "Upload";
 })(FormType || (FormType = {}));
-var JobType;
-(function (JobType) {
-    JobType["Developer"] = "Developer";
-    JobType["Designer"] = "Designer";
-})(JobType || (JobType = {}));
+var PositionType;
+(function (PositionType) {
+    PositionType["Developer"] = "Developer";
+    PositionType["Designer"] = "Designer";
+})(PositionType || (PositionType = {}));
 ;
 exports.FormFactory = (sequelize, DataTypes) => {
     const attributes = {
-        job: {
-            type: DataTypes.ENUM(JobType.Developer, JobType.Designer)
+        position: {
+            type: DataTypes.ENUM(PositionType.Developer, PositionType.Designer)
         },
         question_num: {
             type: DataTypes.INTEGER
