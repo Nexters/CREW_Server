@@ -32,3 +32,9 @@ export async function createUser({
   if(!newUser) { return null }
   return newUser;
 }
+
+export async function findResumesByUserId({user_id}) {
+  const resumes = await db.Resume.findAll({where: {user_id}});
+  if(!resumes) { return null }
+  return resumes;
+}
