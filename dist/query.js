@@ -63,7 +63,6 @@ function upsertEvaluationByUserId({ user_admin_id, user_id, score, comment }) {
                 user_id: user_id,
             }
         });
-        console.log("기존 Evaluation 존재 : " + isExist);
         if (!isExist) {
             console.log("새로운 Evaluation 생성");
             const newEvaluation = yield app_1.db.Evaluation.create({
@@ -73,9 +72,9 @@ function upsertEvaluationByUserId({ user_admin_id, user_id, score, comment }) {
                 comment
             });
             if (!newEvaluation) {
-                return null;
+                return null; // return 
             }
-            return newEvaluation;
+            return newEvaluation; // return 
         }
         const updateEvaluation = yield app_1.db.Evaluation.update({
             score,
@@ -86,6 +85,7 @@ function upsertEvaluationByUserId({ user_admin_id, user_id, score, comment }) {
                 user_id: user_id
             }
         });
+        // return  when update is fail 
         return updateEvaluation;
     });
 }
