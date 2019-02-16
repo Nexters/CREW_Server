@@ -1,4 +1,5 @@
 import { db } from "./app";
+import { EvaluationInstance } from "./models/evaluation";
 
 
 export async function findUserById({ id }) {
@@ -32,6 +33,7 @@ export async function createUser({
   return newUser;
 }
 
+
 export async function findResumesByUserId({ user_id }) {
   const resumes = await db.Resume.findAll({ where: { user_id } });
   if (!resumes) { return null }
@@ -52,3 +54,75 @@ export async function updateUserInfo({ id, age, name, phone_number, email, job, 
   );
   return updated_user;
 }
+
+export async function getEvaluationByUserId({user_id}){
+  const evaluation : EvaluationInstance[] = await db.Evaluation.findAll({
+      where : {
+        user_id : user_id,
+      }
+  })
+  if(!evaluation){
+    return null; 
+  }
+  return evaluation;
+}
+
+export async function findResumesByUserId({user_id}) {
+  const resumes = await db.Resume.findAll({where: {user_id}});
+  if(!resumes) { return null }
+  return resumes;
+}
+
+export async function upsertEvaluationByUserId({
+  user_admin_id,
+  user_id,
+  score,
+  comment
+}) {
+
+
+  const isExist = await db.Evaluation.findOne({
+    where: {
+      user_admin_id : user_admin_id,
+      user_id: user_id,
+    }
+  });
+  
+  if (!isExist) {
+      const newEvaluation = await db.Evaluation.create(
+      {
+        user_admin_id,
+        user_id,
+        score,
+        comment
+      }
+    )
+
+    if (!newEvaluation) {
+      return null; // return 
+    }
+    return newEvaluation;// return 
+  }
+
+  const updateEvaluation = await db.Evaluation.update(
+    {
+      score,
+      comment
+    },{
+      where : {
+        user_admin_id,
+        user_id : user_id
+      }
+    }
+  )
+
+  
+  return updateEvaluation;
+}
+
+export async function findUserAdmin({id}) {
+  const admin = await db.User.find({where: {id, status: 'admin'}});
+  if(!admin) { return null }
+  return admin;
+}
+

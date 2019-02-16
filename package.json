@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/express-jwt": "0.0.41",
     "body-parser": "^1.18.3",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.3",
