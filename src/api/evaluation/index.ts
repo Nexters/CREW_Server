@@ -3,6 +3,7 @@ import * as query from "../../query";
 import * as mw from "../../middleware";
 import { EvaluationAttributes } from "../../models/evaluation";
 import { db } from "../../app";
+import AppResult  from "../../util/index";
 
 const router = express.Router();
 
@@ -13,18 +14,32 @@ router.use(mw.expressJwt);
 router.use(mw.corsMiddleware);
 router.options('*', mw.corsMiddleware);
 
+/*
+const getEvaluation  =  async (user_id : string) : AppResult =>  {
+try {
+  const evaluation : AppResult = await query.getEvaluationByUserId({user_id});
+  return evaluation;
+}catch(err){
 
+}
+  
+  
+
+}
+*/
 
 
 router.get('/', async (req: express.Request, res: express.Response) => { 
   const user_id = req.query.user_id;
+
   try{
 
-    const evaluation  = await query.getEvaluationByUserId({user_id});
-    res.send(evaluation);
+    const evaluation   = await query.getEvaluationByUserId({user_id});
+
+    evaluation.Excute(res);
 
   }catch(err){
-    return res.status(404).end();
+    return new AppResult(null,504,"get : /evaluation ",err).Excute(res);
   }
 });
 
@@ -37,15 +52,16 @@ router.post('/', async (req: express.Request, res: express.Response) => {
 
   
   try {
-    const result = await query.upsertEvaluationByUserId({
+    const result : AppResult = await query.upsertEvaluationByUserId({
       user_admin_id,
       user_id,
       score,
     comment
-
     })
+    
+    return result.Excute(res);
   } catch (err) {
-    console.log(err);
+    return new AppResult(null,504,"post evaluation","failed_to_await").Excute(res);
   }
 });
 
