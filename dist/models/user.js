@@ -65,4 +65,7 @@ exports.UserFactory = (sequelize, DataTypes) => {
     };
     return User;
 };
+exports.isAdmin = (status) => {
+    return ApplicantStatus.Admin == status ? true : false;
+};
 //# sourceMappingURL=user.js.map
