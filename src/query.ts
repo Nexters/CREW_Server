@@ -1,5 +1,4 @@
 import { db } from "./app";
-import { isAdmin } from "./models/user"
 import { EvaluationInstance } from "./models/evaluation";
 
 
@@ -41,16 +40,10 @@ export async function getEvaluationByUserId({user_id}){
         user_id : user_id,
       }
   })
-  for(let i=0; i < evaluation.length; i++){
-      console.log("Evaluation["+i+"] :"+evaluation[i]);
-      
+  if(!evaluation){
+    return null; 
   }
-  console.log(JSON.stringify(evaluation[0]));
-  
-
-  
-  
-
+  return evaluation;
 }
 
 export async function findResumesByUserId({user_id}) {

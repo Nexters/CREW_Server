@@ -52,10 +52,10 @@ function getEvaluationByUserId({ user_id }) {
                 user_id: user_id,
             }
         });
-        for (let i = 0; i < evaluation.length; i++) {
-            console.log("Evaluation[" + i + "] :" + evaluation[i]);
+        if (!evaluation) {
+            return null;
         }
-        console.log(JSON.stringify(evaluation[0]));
+        console.log("유저 평가 : " + JSON.stringify(evaluation));
     });
 }
 exports.getEvaluationByUserId = getEvaluationByUserId;
