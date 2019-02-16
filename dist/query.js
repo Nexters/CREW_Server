@@ -69,6 +69,7 @@ function findResumesByUserId({ user_id }) {
     });
 }
 exports.findResumesByUserId = findResumesByUserId;
+
 function upsertEvaluationByUserId({ user_admin_id, user_id, score, comment }) {
     return __awaiter(this, void 0, void 0, function* () {
         const isExist = yield app_1.db.Evaluation.findOne({
@@ -104,4 +105,15 @@ function upsertEvaluationByUserId({ user_admin_id, user_id, score, comment }) {
     });
 }
 exports.upsertEvaluationByUserId = upsertEvaluationByUserId;
+
+function findUserAdmin({ id }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const admin = yield app_1.db.User.find({ where: { id, status: 'admin' } });
+        if (!admin) {
+            return null;
+        }
+        return admin;
+    });
+}
+exports.findUserAdmin = findUserAdmin;
 //# sourceMappingURL=query.js.map

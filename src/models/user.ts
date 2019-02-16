@@ -111,4 +111,3 @@ export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
   }
   return User;
 };
-

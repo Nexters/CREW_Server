@@ -51,6 +51,7 @@ export async function findResumesByUserId({user_id}) {
   if(!resumes) { return null }
   return resumes;
 }
+
 export async function upsertEvaluationByUserId({
   user_admin_id,
   user_id,
@@ -97,4 +98,10 @@ export async function upsertEvaluationByUserId({
 
   // return  when update is fail 
   return updateEvaluation;
+}
+
+export async function findUserAdmin({id}) {
+  const admin = await db.User.find({where: {id, status: 'admin'}});
+  if(!admin) { return null }
+  return admin;
 }
