@@ -16,13 +16,19 @@ router.options('*', mw.corsMiddleware);
 
 
 
-router.get('/', async (req: express.Request, res: express.Response) => { // get : evaluation
-  const id = req.params.id;
-  const user = await query.findUserById({ id });
-  res.send(user);
+router.get('/', async (req: express.Request, res: express.Response) => { 
+  const user_id = req.query.user_id;
+  try{
+
+    const evaluation  = await query.getEvaluationByUserId({user_id});
+    res.send(evaluation);
+
+  }catch(err){
+    return res.status(404).end();
+  }
 });
 
-router.post('/', async (req: express.Request, res: express.Response) => { // post : evaluation
+router.post('/', async (req: express.Request, res: express.Response) => { 
   const user_id = req.query.user_id;
 
   const score = req.body.score;
