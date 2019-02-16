@@ -1,4 +1,5 @@
 import { db } from "./app";
+import { isAdmin } from "./models/user"
 
 
 export async function findUserById({id}) {
@@ -37,4 +38,51 @@ export async function findResumesByUserId({user_id}) {
   const resumes = await db.Resume.findAll({where: {user_id}});
   if(!resumes) { return null }
   return resumes;
+}
+export async function upsertEvaluationByUserId({
+  user_admin_id,
+  user_id,
+  score,
+  comment
+}) {
+
+
+  const isExist = await db.Evaluation.findOne({
+    where: {
+      user_admin_id : user_admin_id,
+      user_id: user_id,
+    }
+  });
+  
+  if (!isExist) {
+    console.log("새로운 Evaluation 생성"); 
+    const newEvaluation = await db.Evaluation.create(
+      {
+        user_admin_id,
+        user_id,
+        score,
+        comment
+      }
+    )
+
+    if (!newEvaluation) {
+      return null; // return 
+    }
+    return newEvaluation;// return 
+  }
+
+  const updateEvaluation = await db.Evaluation.update(
+    {
+      score,
+      comment
+    },{
+      where : {
+        user_admin_id,
+        user_id : user_id
+      }
+    }
+  )
+
+  // return  when update is fail 
+  return updateEvaluation;
 }

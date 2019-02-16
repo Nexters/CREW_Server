@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import user from "./api/user/index";
 import auth from "./api/auth/index";

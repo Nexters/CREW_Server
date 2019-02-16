@@ -55,4 +55,39 @@ function findResumesByUserId({ user_id }) {
     });
 }
 exports.findResumesByUserId = findResumesByUserId;
+function upsertEvaluationByUserId({ user_admin_id, user_id, score, comment }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const isExist = yield app_1.db.Evaluation.findOne({
+            where: {
+                user_admin_id: user_admin_id,
+                user_id: user_id,
+            }
+        });
+        console.log("기존 Evaluation 존재 : " + isExist);
+        if (!isExist) {
+            console.log("새로운 Evaluation 생성");
+            const newEvaluation = yield app_1.db.Evaluation.create({
+                user_admin_id,
+                user_id,
+                score,
+                comment
+            });
+            if (!newEvaluation) {
+                return null;
+            }
+            return newEvaluation;
+        }
+        const updateEvaluation = yield app_1.db.Evaluation.update({
+            score,
+            comment
+        }, {
+            where: {
+                user_admin_id,
+                user_id: user_id
+            }
+        });
+        return updateEvaluation;
+    });
+}
+exports.upsertEvaluationByUserId = upsertEvaluationByUserId;
 //# sourceMappingURL=query.js.map

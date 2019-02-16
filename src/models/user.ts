@@ -111,3 +111,7 @@ export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
   }
   return User;
 };
+
+export const isAdmin = (status) => {
+   return ApplicantStatus.Admin==status?true:false; 
+}
