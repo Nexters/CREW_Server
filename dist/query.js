@@ -55,4 +55,14 @@ function findResumesByUserId({ user_id }) {
     });
 }
 exports.findResumesByUserId = findResumesByUserId;
+function findUserAdmin({ id }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const admin = yield app_1.db.User.find({ where: { id, status: 'admin' } });
+        if (!admin) {
+            return null;
+        }
+        return admin;
+    });
+}
+exports.findUserAdmin = findUserAdmin;
 //# sourceMappingURL=query.js.map

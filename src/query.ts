@@ -38,3 +38,9 @@ export async function findResumesByUserId({user_id}) {
   if(!resumes) { return null }
   return resumes;
 }
+
+export async function findUserAdmin({id}) {
+  const admin = await db.User.find({where: {id, status: 'admin'}});
+  if(!admin) { return null }
+  return admin;
+}
