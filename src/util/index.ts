@@ -52,12 +52,13 @@ export default class AppResult {
         }
     }
     public Excute(res : express.Response){
-        if(!this.result){
+        if(!this.result && this.getStatus() != 200){
             res.status(this.getStatus()).send(this.Error())
-        }else{
+        }else if(this.result){
             res.status(this.getStatus()).end(); 
+        }else{
+            res.status(504).send("at < util/index > : < server_made_wrong_result > ")
         }
-    }
     
     
 }
