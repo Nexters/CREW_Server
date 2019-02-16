@@ -31,13 +31,13 @@ router.post('/', async (req: express.Request, res: express.Response) => { // pos
 
   
   try {
-    const result = await Promise.all([query.upsertEvaluationByUserId({
+    const result = await query.upsertEvaluationByUserId({
       user_admin_id,
       user_id,
       score,
     comment
 
-    })])
+    })
   } catch (err) {
     console.log(err);
   }
