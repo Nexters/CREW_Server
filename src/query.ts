@@ -33,13 +33,6 @@ export async function createUser({
   return newUser;
 }
 
-
-export async function findResumesByUserId({ user_id }) {
-  const resumes = await db.Resume.findAll({ where: { user_id } });
-  if (!resumes) { return null }
-  return resumes;
-}
-
 export async function updateUserInfo({ id, age, name, phone_number, email, job, position }) {
   const updated_user = await db.User.update(
     {
