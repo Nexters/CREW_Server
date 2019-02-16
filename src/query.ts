@@ -1,6 +1,6 @@
 import { db } from "./app";
 import { EvaluationInstance } from "./models/evaluation";
-
+import { UserInstance } from "./models/user";
 
 export async function findUserById({ id }) {
   const user = await db.User.findByPk(id);
@@ -48,22 +48,16 @@ export async function updateUserInfo({ id, age, name, phone_number, email, job, 
   return updated_user;
 }
 
-export async function getEvaluationByUserId({user_id}){
-  const evaluation : EvaluationInstance[] = await db.Evaluation.findAll({
-      where : {
-        user_id : user_id,
-      }
+export async function getEvaluationByUserId({ user_id }) {
+  const evaluation: EvaluationInstance[] = await db.Evaluation.findAll({
+    where: {
+      user_id: user_id,
+    }
   })
-  if(!evaluation){
-    return null; 
+  if (!evaluation) {
+    return null;
   }
   return evaluation;
-}
-
-export async function findResumesByUserId({user_id}) {
-  const resumes = await db.Resume.findAll({where: {user_id}});
-  if(!resumes) { return null }
-  return resumes;
 }
 
 export async function upsertEvaluationByUserId({
@@ -76,13 +70,13 @@ export async function upsertEvaluationByUserId({
 
   const isExist = await db.Evaluation.findOne({
     where: {
-      user_admin_id : user_admin_id,
+      user_admin_id: user_admin_id,
       user_id: user_id,
     }
   });
-  
+
   if (!isExist) {
-      const newEvaluation = await db.Evaluation.create(
+    const newEvaluation = await db.Evaluation.create(
       {
         user_admin_id,
         user_id,
@@ -92,30 +86,36 @@ export async function upsertEvaluationByUserId({
     )
 
     if (!newEvaluation) {
-      return null; // return 
+      return null; // return
     }
-    return newEvaluation;// return 
+    return newEvaluation;// return
   }
 
   const updateEvaluation = await db.Evaluation.update(
     {
       score,
       comment
-    },{
-      where : {
+    }, {
+      where: {
         user_admin_id,
-        user_id : user_id
+        user_id: user_id
       }
     }
   )
 
-  
+
   return updateEvaluation;
 }
 
-export async function findUserAdmin({id}) {
-  const admin = await db.User.find({where: {id, status: 'admin'}});
-  if(!admin) { return null }
+export async function findUserAdmin({ id }) {
+  const admin = await db.User.findOne({ where: { id, status: 'admin' } });
+  if (!admin) { return null }
   return admin;
+}
+
+export async function findAllUsers() {
+  const users: UserInstance[] = await db.User.findAll();
+  if (!users) { return null }
+  return users;
 }
 
