@@ -45,6 +45,20 @@ function createUser({ member_provider, member_provider_number, provide_image, to
     });
 }
 exports.createUser = createUser;
+function getEvaluationByUserId({ user_id }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const evaluation = yield app_1.db.Evaluation.findAll({
+            where: {
+                user_id: user_id,
+            }
+        });
+        for (let i = 0; i < evaluation.length; i++) {
+            console.log("Evaluation[" + i + "] :" + evaluation[i]);
+        }
+        console.log(JSON.stringify(evaluation[0]));
+    });
+}
+exports.getEvaluationByUserId = getEvaluationByUserId;
 function findResumesByUserId({ user_id }) {
     return __awaiter(this, void 0, void 0, function* () {
         const resumes = yield app_1.db.Resume.findAll({ where: { user_id } });

@@ -17,9 +17,10 @@ router.options('*', mw.corsMiddleware);
 
 
 router.get('/', async (req: express.Request, res: express.Response) => { // get : evaluation
-  const id = req.params.id;
-  const user = await query.findUserById({ id });
-  res.send(user);
+  const user_id = req.query.user_id;
+  
+  const user = await query.getEvaluationByUserId({user_id});
+  
 });
 
 router.post('/', async (req: express.Request, res: express.Response) => { // post : evaluation

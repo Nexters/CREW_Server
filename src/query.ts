@@ -1,5 +1,6 @@
 import { db } from "./app";
 import { isAdmin } from "./models/user"
+import { EvaluationInstance } from "./models/evaluation";
 
 
 export async function findUserById({id}) {
@@ -32,6 +33,24 @@ export async function createUser({
   });
   if(!newUser) { return null }
   return newUser;
+}
+
+export async function getEvaluationByUserId({user_id}){
+  const evaluation : EvaluationInstance[] = await db.Evaluation.findAll({
+      where : {
+        user_id : user_id,
+      }
+  })
+  for(let i=0; i < evaluation.length; i++){
+      console.log("Evaluation["+i+"] :"+evaluation[i]);
+      
+  }
+  console.log(JSON.stringify(evaluation[0]));
+  
+
+  
+  
+
 }
 
 export async function findResumesByUserId({user_id}) {
