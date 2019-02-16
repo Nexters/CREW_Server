@@ -1,7 +1,6 @@
 import express from "express";
 import * as query from "../../query";
 import * as mw from "../../middleware";
-import { isUser } from "babel-types";
 import { UserInstance } from "../../models/user";
 
 const router = express.Router();
