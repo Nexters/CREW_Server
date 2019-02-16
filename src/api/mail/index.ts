@@ -14,30 +14,21 @@ router.post('/', async (req: express.Request, res: express.Response) => {
       pass: process.env.MAIL_PASSWORD
     }
   });
-  const { mailList, context } = req.body;
+  const { mailList, mail_title, mail_context } = req.body;
 
   for (const user of mailList) {
     let mailOptions = {
       from: '"NEXTERS" <teamnexters@gmail.com>', // sender address
       to: user.mail, // list of receivers
-      subject: "Hello", // Subject line
-      text: "Hello world ?", // plain text body
-      html: `<b>${user.name} ${context}</b>` // html body
+      subject: mail_title, // Subject line
+      // text: "Hello world", // plain text body
+      html: `<b>${user.name} ${mail_context}</b>` // html body
     };
     let info = await transporter.sendMail(mailOptions);
 
-    console.log("Message sent: % s", info.messageId, user.name);
-    console.log("Preview URL: % s", nodemailer.getTestMessageUrl(info));
+    console.log("Message sent: ", info.messageId, user.name);
+    console.log("Preview URL: ", nodemailer.getTestMessageUrl(info));
   }
-
-  res.send(
-    {
-      message: "success"
-    }
-  );
+  res.send({ message: "mail send seccess" });
 });
-
 export default router;
-
-
-
