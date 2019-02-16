@@ -29,9 +29,28 @@ router.use(mw.corsMiddleware);
 router.options('*', mw.corsMiddleware);
 router.get('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
     const user_id = req.user.id;
-    console.log(user_id);
-    const resumes = yield query.findResumesByUserId({ user_id });
-    res.send(resumes);
+    try {
+        const resumes = yield query.findResumesByUserId({ user_id });
+        res.send(resumes);
+    }
+    catch (err) {
+        return res.status(404).end();
+    }
+}));
+router.get('/read', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    const admin_id = req.user.id;
+    const user_id = req.query.user_id;
+    try {
+        const admin = yield query.findUserAdmin({ id: admin_id });
+        if (!admin) {
+            return res.status(404).end();
+        }
+        const resumes = yield query.findResumesByUserId({ user_id });
+        res.send(resumes);
+    }
+    catch (error) {
+        return res.status(404).end();
+    }
 }));
 exports.default = router;
 //# sourceMappingURL=index.js.map
