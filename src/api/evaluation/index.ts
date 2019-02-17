@@ -1,9 +1,7 @@
 import express from "express";
-import * as query from "../../query";
-import * as mw from "../../middleware";
-import { EvaluationAttributes } from "../../models/evaluation";
-import { db } from "../../app";
-import AppResult  from "../../util/index";
+import * as query from "query";
+import * as mw from "middleware";
+import AppResult  from "util/index";
 
 const router = express.Router();
 
@@ -13,20 +11,6 @@ router.use(mw.urlencodedMiddleware);
 router.use(mw.expressJwt);
 router.use(mw.corsMiddleware);
 router.options('*', mw.corsMiddleware);
-
-/*
-const getEvaluation  =  async (user_id : string) : AppResult =>  {
-try {
-  const evaluation : AppResult = await query.getEvaluationByUserId({user_id});
-  return evaluation;
-}catch(err){
-
-}
-  
-  
-
-}
-*/
 
 
 router.get('/', async (req: express.Request, res: express.Response) => { 

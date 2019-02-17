@@ -1,5 +1,5 @@
 import Sequelize from "sequelize";
-import { DbInterface } from "../db/DbInterface/index";
+import { DbInterface } from "db/DbInterface/index";
 import { UserFactory } from "./user";
 import { FormFactory } from "./form";
 import { ResumeFactory } from "./resume";

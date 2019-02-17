@@ -1,9 +1,7 @@
 import express from "express";
-import * as mw from "../../middleware";
-import * as query from "../../query";
-import { ResumeInstance } from "../../models/resume";
-import { UserInstance } from "../../models/user";
-import AppResult from "../../util/index";
+import * as mw from "middleware";
+import * as query from "query";
+import AppResult from "util/index";
 
 const router = express.Router();
 

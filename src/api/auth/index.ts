@@ -10,9 +10,9 @@ import cookieParser from "cookie-parser";
 import flash from "connect-flash";
 import jwt from "jsonwebtoken";
 import * as FacebookPassport from 'passport-facebook';
-import { insertReq, insertToken, loginRequired } from "../../middleware";
-import { UserAttributes } from "../../models/user";
-import * as query from "../../query";
+import { insertReq, insertToken, loginRequired } from "middleware";
+import { UserAttributes } from "models/user";
+import * as query from "query";
 
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const KakaoStrategy = require('passport-kakao').Strategy
