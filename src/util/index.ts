@@ -1,6 +1,6 @@
 import express from "express";
 import { format } from "url";
-import {PositionType, FormType, options} from "../models/form"
+import {PositionType, FormType} from "../models/form"
 import { decode } from "jsonwebtoken";
 import { json } from "sequelize";
 
@@ -73,11 +73,11 @@ export interface  FormJsonSkeleton{
 }
 
 export interface FormElementSkeleton {
-    position : string;
+    position : PositionType;
     question_num : number;
-    type : string;
+    type : FormType;
     description : string,
-    options : json,
+    options : string,
 }
 //TODO descriptionSkeletor 반영하기 
 

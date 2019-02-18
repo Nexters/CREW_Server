@@ -14,17 +14,13 @@ export enum PositionType {
   Designer = "Designer"
 }
 
-export interface options { 
-  optionPlaceholder : string,
-  checked : boolean
-}
 
 export interface FormAttributes {
   id?: number;
   position: PositionType;
   question_num: number;
   description?: string;
-  options? :  json;
+  options? :  string;
   type: FormType;
   created_at?: Date;
   updated_at?: Date;
@@ -54,9 +50,6 @@ export const FormFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
     },
     description :{
       type : DataTypes.STRING
-    },
-    options : {
-      type : DataTypes.JSON
     },
     type: {
       type: DataTypes.ENUM(FormType.Short_Answer, FormType.Long_Answer, FormType.Selector, FormType.Upload)

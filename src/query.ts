@@ -165,46 +165,49 @@ export async function createForm(data: FormJsonSkeleton) {
   let refinedData: FormElementSkeleton[] = FormDecompositionHelper(data);
   let sFlag = true; // 모든 create 가 성공했는지 저장한다
   let fIdx = 0; // 몇 번 째 시도에서 실패했는지 저장한다
-  let dbResult;
+  let dbResult, question_num, rawDescription;
+  var position, type;
 
   for (let i = 0; i < refinedData.length; i++) {
-    let position;
-    let type; 
+
     if (refinedData[i].position == PositionType.Designer) {
-        position = PositionType.Designer;
-    }else{
+      position = PositionType.Designer;
+    } else {
       position = PositionType.Developer;
     }
 
-    switch(refinedData[i].type){
-         case FormType.Long_Answer:
-          type = FormType.Long_Answer;
-          break;
-          case  FormType.Short_Answer:
-          type = FormType.Short_Answer;
-          break;
-          case  FormType.Selector:
-          type = FormType.Selector;
-          break;
-          case  FormType.Upload:
-          type = FormType.Upload;
-          break;
+    switch (refinedData[i].type) {
+      case FormType.Long_Answer:
+        type = FormType.Long_Answer;
+        break;
+      case FormType.Short_Answer:
+        type = FormType.Short_Answer;
+        break;
+      case FormType.Selector:
+        type = FormType.Selector;
+        break;
+      case FormType.Upload:
+        type = FormType.Upload;
+        break;
     };
+    question_num = refinedData[i].question_num,
+      rawDescription = refinedData[i].description;
 
-
-
-    let question_num = refinedData[i].question_num,
-      description = refinedData[i].description,
-      options = refinedData[i].options,
-
+    let description = rawDescription[0];
+    if (rawDescription.length > 1) {
+      description += "[opt>]";
+      for (let j = 1; j < rawDescription.length; j++) {
+        description += ":" + rawDescription[j];
+      }
+    }
     dbResult = await Promise.all([db.Form.create({
       position,
       question_num,
       description,
-      options,
       type
     })
     ])
+
 
     if (!dbResult) {
       sFlag = false;
@@ -212,7 +215,6 @@ export async function createForm(data: FormJsonSkeleton) {
     }
 
   }
-  console.log("삽입결과 : "+dbResult);
   if (!sFlag) {
     return new AppResult(null, 504, "query.ts/createForm", "create_form_error_while_" + fIdx + "(th/st) try");
   }
