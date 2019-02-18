@@ -1,4 +1,8 @@
 import express from "express";
+import { format } from "url";
+import {PositionType, FormType, options} from "../models/form"
+import { decode } from "jsonwebtoken";
+import { json } from "sequelize";
 
 /*
  *  MODE in .env 
@@ -27,7 +31,7 @@ export default class AppResult {
     public getStatus(): number {
         return this.status;
     }
-    public getResult(): void {
+    public getResult(): any {
         return this.result;
     }
     public getWhere(): string {
@@ -55,11 +59,28 @@ export default class AppResult {
         if (!this.result && this.getStatus() != 200) {
             res.status(this.getStatus()).send(this.Error())
         } else if (this.result) {
-            res.status(this.getStatus()).end();
+            res.status(this.getStatus()).send(this.getResult());
         } else {
             res.status(504).send("at < util/index > : < server_made_wrong_result > ")
         }
-
-
     }
+}
+
+
+export interface  FormJsonSkeleton{
+    form : FormElementSkeleton[]
+
+}
+
+export interface FormElementSkeleton {
+    position : string;
+    question_num : number;
+    type : string;
+    description : string,
+    options : json,
+}
+//TODO descriptionSkeletor 반영하기 
+
+export const FormDecompositionHelper = (elem : FormJsonSkeleton) : FormElementSkeleton[] => {
+    return elem.form;
 }
