@@ -2,7 +2,7 @@ import Sequelize from "sequelize"
 import { SequelizeAttributes } from "./index.d";
 import { ResumeInstance, ResumeAttributes } from "./resume";
 
-enum FormType {
+export enum FormType {
   Short_Answer = "Short_Answer",
   Long_Answer = "Long_Answer",
   Selector = "Seletor",

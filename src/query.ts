@@ -105,3 +105,42 @@ export async function findUserAdmin({id}) {
   if(!admin) { return null }
   return admin;
 }
+
+export async function findFormById({form_id}) {
+  const form = await db.Form.findByPk(form_id);
+  if(!form) { return null } 
+  return form;
+}
+
+export async function updateORcreateResume({
+  answer,
+  form_id,
+  user_id
+}) {
+  const isExist = db.Resume.findOne({
+    where: {
+      form_id: form_id, 
+      user_id: user_id
+    }
+  });
+
+  if(isExist) {
+    const updateResume = db.Resume.update({
+      answer
+    },{
+      where: {
+        form_id: form_id, 
+        user_id: user_id
+      }
+    }
+    )
+    return updateResume;
+  }
+  const createResume = db.Resume.create({
+    answer,
+    form_id,
+    user_id
+  });
+
+  return createResume;
+}
