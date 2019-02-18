@@ -1,8 +1,6 @@
 import express from "express";
 import { format } from "url";
 import {PositionType, FormType} from "../models/form"
-import { decode } from "jsonwebtoken";
-import { json } from "sequelize";
 
 /*
  *  MODE in .env 
@@ -27,7 +25,12 @@ export default class AppResult {
         this.message = message;
         this.mode = process.env.MODE;
     }
-
+    public isError() : boolean {
+        if(!this.getResult()){
+            return true;
+        }
+        return false;
+    }
     public getStatus(): number {
         return this.status;
     }
@@ -79,8 +82,55 @@ export interface FormElementSkeleton {
     description : string,
     options : string,
 }
-//TODO descriptionSkeletor 반영하기 
 
-export const FormDecompositionHelper = (elem : FormJsonSkeleton) : FormElementSkeleton[] => {
-    return elem.form;
+export const CheckDataValidity = (elem) : boolean => {
+    
+    
+    for(let i=0; i < elem.form.length; i++){
+        if(!(elem.form[i].description &&
+             elem.form[i].position &&
+              elem.form[i].question_num && elem.form[i].type)){
+                return true;
+    }
+    
+
+}
+}
+
+export const getFormTypeAsEnum = (refinedDate : FormElementSkeleton)  : FormType => {
+    let type;
+    switch (refinedDate.type) {
+        case FormType.Long_Answer:
+          type = FormType.Long_Answer;
+          return type;
+        case FormType.Short_Answer:
+          type = FormType.Short_Answer;
+          return type;
+        case FormType.Selector:
+          type = FormType.Selector;
+          return type;
+        case FormType.Upload:
+          type = FormType.Upload;
+          return type;
+      };
+}
+
+export const getPositionTypeAsEnum = (refinedDate : FormElementSkeleton) : PositionType => {
+
+    if (refinedDate.position == PositionType.Designer) {
+        return  PositionType.Designer;
+      } else if(refinedDate.position==PositionType.Developer){
+        return  PositionType.Developer;
+      }
+}
+
+export const buildDescription = (rawDescription) : string => {
+    let description = rawDescription[0];
+    if (rawDescription.length > 1) {
+      description += "[opt>]";
+      for (let j = 1; j < rawDescription.length; j++) {
+        description += ":" + rawDescription[j];
+      }
+    }
+    return description;
 }

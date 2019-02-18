@@ -1,6 +1,6 @@
 import { db } from "./app";
 import { EvaluationInstance } from "./models/evaluation";
-import AppResult, { FormJsonSkeleton, FormElementSkeleton, FormDecompositionHelper } from "./util/index";
+import AppResult, { FormJsonSkeleton, FormElementSkeleton, getPositionTypeAsEnum, buildDescription, getFormTypeAsEnum } from "./util/index";
 import { UserInstance } from "./models/user";
 import { PositionType, FormType } from './models/form';
 
@@ -10,9 +10,8 @@ import { PositionType, FormType } from './models/form';
 export async function findUserById({ id }) {
   const user = await db.User.findByPk(id);
   if (!user) {
-    return new AppResult(null, 200, null, null);
   }
-  return new AppResult(user, 200, null, null);
+  return new AppResult(null, 200, null, null);
 };
 
 export async function findUserByProvider({
@@ -143,8 +142,7 @@ export async function findAllUsers() {
 
 
 export async function getForm(position: PositionType) {
-  console.log("포지션 : " + position);
-  console.log(position === PositionType.Developer);
+
   const dbResult = await db.Form.findAll({
     where: {
       position: position
@@ -153,7 +151,6 @@ export async function getForm(position: PositionType) {
   if (!dbResult) {
     return new AppResult(null, 504, "query.ts/getForm", "failed_to_get_form_data");
   }
-  console.log("결과 : " + JSON.stringify(dbResult));
   return new AppResult(dbResult, 200, null, null);
 }
 
@@ -162,7 +159,10 @@ export async function createForm(data: FormJsonSkeleton) {
   // TODO 관리자권환 확인하기
   // TODO UPDATE 
   // TOOD 
-  let refinedData: FormElementSkeleton[] = FormDecompositionHelper(data);
+
+
+  let refinedData: FormElementSkeleton[] = data.form;
+
   let sFlag = true; // 모든 create 가 성공했는지 저장한다
   let fIdx = 0; // 몇 번 째 시도에서 실패했는지 저장한다
   let dbResult, question_num, rawDescription;
@@ -170,36 +170,14 @@ export async function createForm(data: FormJsonSkeleton) {
 
   for (let i = 0; i < refinedData.length; i++) {
 
-    if (refinedData[i].position == PositionType.Designer) {
-      position = PositionType.Designer;
-    } else {
-      position = PositionType.Developer;
-    }
-
-    switch (refinedData[i].type) {
-      case FormType.Long_Answer:
-        type = FormType.Long_Answer;
-        break;
-      case FormType.Short_Answer:
-        type = FormType.Short_Answer;
-        break;
-      case FormType.Selector:
-        type = FormType.Selector;
-        break;
-      case FormType.Upload:
-        type = FormType.Upload;
-        break;
-    };
+    position = getPositionTypeAsEnum(refinedData[i])
+    type = getFormTypeAsEnum(refinedData[i]);
+    
     question_num = refinedData[i].question_num,
-      rawDescription = refinedData[i].description;
+    rawDescription = refinedData[i].description;
 
-    let description = rawDescription[0];
-    if (rawDescription.length > 1) {
-      description += "[opt>]";
-      for (let j = 1; j < rawDescription.length; j++) {
-        description += ":" + rawDescription[j];
-      }
-    }
+    let description = buildDescription(rawDescription);
+
     dbResult = await Promise.all([db.Form.create({
       position,
       question_num,
@@ -207,7 +185,6 @@ export async function createForm(data: FormJsonSkeleton) {
       type
     })
     ])
-
 
     if (!dbResult) {
       sFlag = false;

@@ -2,108 +2,72 @@
 /*
     > EXPECTED < 
      1. 개발자 폼 양식예시 
- {
+  {
     "form" :[
-		      {
-             "position" : "Developer",
-             "question_num" : "1",
-             "type" : "Short_Answer",
-             "description" : {
-                  "placeholder" : "가장 좋아하는 포켓몬은?",
-                  "options" : " "
-             }
-		      },
-             {
-             "position" : "Developer",
-             "question_num" : "2",
-             "type" : "Long_answer",
-             "description" : {
-                  "placeholder" : "태일이와 아구몬의 관계에 관하여 논하시오[300자]",
-                  "options" : " "
-             }
-             },
-             {
-             "position" : "Developer",
-             "question_num" : "1",
+	{
+          "question_num" : 1,
+          "position" : "Developer",
              "type" : "Selector",
-             "description" : {
-                  "placeholder" : "회식때 가장 선호하는  메뉴는?",
-                  "options" : [
-                        { "num" : "0", "value" : "훠궈"},
-                        { "num" : "1", "value" : "삼겹살"} ,
-                        { "num" : "2", "value" : "갈비"},
-                        { "num" : "3", "value" : "연어"},
-                        { "num" : "4", "value" : "참이슬"}
-                  ]
-             }
-             }
+    		 "description" :  [
+             "사용하는 프로그래밍 언어를 고르세요","c언어","Go언어","javascript"
+			             ]
+     },
+     {
+          "question_num" : 2,
+          "position" : "Developer",
+          "type" : "Short_Answer",
+    		"description" :  ["좋아하는 음식을 써주세요"]
+     },
+     {
+          "question_num" : 3,
+          "position" : "Developer",
+          "type" : "Long_Answer",
+    	"description" :  ["사용하는 프로그래밍 언어를 고르세요","c언어","Go언어","javascript"]
+     },
+     {
+          "question_num" : 4,
+          "position" : "Developer",
+          "type" : "Long_Answer",
+    		"description" :  ["본인의 협업 경험에 관하여 쓰세요"]
+     }
+     
+           
     ] 
 }
 
 /    > EXPECTED < 
      1. 디자이너 폼 양식예시 
-    { 
-        elem : [
-            {
-             position : Designer,
-             question_num : 1,
-             type : "Short_Answer",
-             description : {
-                  placeholder : "가장 좋아하는 디지몬은?",
-                  options : null,
-             },
-            {
-             position : Designer,
-             question_num : 2,
-             type : "Long_answer",
-             description : {
-                  placeholder : "협업 경험에 관하여 쓰시오[300자]",
-                  options : null,
-             },
-            {
-             position : Designer,
-             question_num : 3,
-             type : "Selector",
-             description : {
-                  placeholder : "회식때 가장 선호하는  메뉴는?",
-                  options : [
-                        { num : 0, value : "훠궈"},
-                        { num : 1, value : "삼겹살"} ,
-                        { num : 3, value : "갈비"},
-                        { num : 4, value : "연어"},
-                        { num : 4, value : "참이슬"},
-                  ],
-             },
-             {
-             position : Designer,
-             question_num : 4,
-             type : "UpLoad",
-             description : {
-                  placeholder : "포트폴리오를 올리세요",
-             },
-
-            },
-]        
-    }
-  
-{
+   {
     "form" :[
-		      {
-             "position" : "Developer",
-             "question_num" : "1",
-             "type" : "Short_Answer",
-             "description" :  "가장 좋아하는 포켓몬은?",
-			 "options" : {
-			 	"id" : "1"
-			 }
-            },
-             {
-             "position" : "Developer",
-             "question_num" : "2",
-             "type" : "Long_answer",
-             "description" :  "태일이와 아구몬의 관계에 관하여 논하시오[300자]",
-			 "options" : " "
-             
-             }
-    ] 
-}
+	{
+          "question_num" : 1,
+          "position" : "Designer",
+             "type" : "Selector",
+    		 "description" :  [
+             "사용하는 프로그래밍 언어를 고르세요","c언어","Go언어","javascript"
+			             ]
+     },
+     {
+          "question_num" : 2,
+          "position" : "Designer",
+          "type" : "Short_Answer",
+    		"description" :  ["좋아하는 음식을 써주세요"]
+     },
+     {
+          "question_num" : 3,
+          "position" : "Designer",
+          "type" : "Long_Answer",
+    		"description" :  ["사용하는 프로그래밍 언어를 고르세요","c언어","Go언어","javascript"]
+     },
+     {
+          "question_num" : 4,
+          "position" : "Designer",
+          "type" : "Long_Answer",
+    		"description" :  ["본인의 협업 경험에 관하여 쓰세요"]
+     },
+     {
+          "question_num" : 5,
+          "position" : "Designer",
+          "type" : "Upload",
+    		"description" :  ["포트폴리오를 올려주세요(ppt,pdf만 가능)"]
+     }
