@@ -14,28 +14,16 @@ router.use(mw.expressJwt);
 router.use(mw.corsMiddleware);
 router.options('*', mw.corsMiddleware);
 
-/*
-const getEvaluation  =  async (user_id : string) : AppResult =>  {
-try {
-  const evaluation : AppResult = await query.getEvaluationByUserId({user_id});
-  return evaluation;
-}catch(err){
-
-}
-  
-  
-
-}
-*/
-
 
 router.get('/', async (req: express.Request, res: express.Response) => { 
   const user_id = req.query.user_id;
 
+  if(!user_id){
+    return new AppResult(null,404,"/evaluation get ","error_not_specified_user_id").Excute(res);
+  }
   try{
 
     const evaluation   = await query.getEvaluationByUserId({user_id});
-
     evaluation.Excute(res);
 
   }catch(err){
