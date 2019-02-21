@@ -3,7 +3,6 @@ import * as query from "../../query";
 import * as mw from "../../middleware";
 import { EvaluationAttributes } from "../../models/evaluation";
 import { db } from "../../app";
-import AppResult  from "../../util/index";
 
 const router = express.Router();
 
@@ -19,15 +18,15 @@ router.get('/', async (req: express.Request, res: express.Response) => {
   const user_id = req.query.user_id;
 
   if(!user_id){
-    return new AppResult(null,404,"/evaluation get ","error_not_specified_user_id").Excute(res);
+    return res.status(404).send('/evaluation get: error_not_specified_user_id');
   }
   try{
 
     const evaluation   = await query.getEvaluationByUserId({user_id});
-    evaluation.Excute(res);
+    res.send(evaluation);
 
   }catch(err){
-    return new AppResult(null,504,"get : /evaluation ",err).Excute(res);
+    return res.status(504).end('get : /evaluation');
   }
 });
 
@@ -40,16 +39,16 @@ router.post('/', async (req: express.Request, res: express.Response) => {
 
   
   try {
-    const result : AppResult = await query.upsertEvaluationByUserId({
+    const result = await query.upsertEvaluationByUserId({
       user_admin_id,
       user_id,
       score,
     comment
     })
     
-    return result.Excute(res);
+    return res.send(result);
   } catch (err) {
-    return new AppResult(null,504,"post evaluation","failed_to_await").Excute(res);
+    return res.status(504).end('post evaluation: failed_to_await');
   }
 });
 
