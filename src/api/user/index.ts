@@ -14,23 +14,31 @@ router.use('*', mw.corsMiddleware);
 router.get('/', async (req: express.Request, res: express.Response) => {
   try {
     const id = req.user.id;
-    const admin: UserInstance = await query.findUserAdmin({ id: id });
+    const admin = await query.findUserAdmin({ id: id });
     if (!admin) {
-      const user: UserInstance = await query.findUserById({ id });
+      const user = await query.findUserById({ id });
+      if(!user) { return res.status(404).end('get users/ : not admin and not found user');}
       res.send(user);
     }
     const users: UserInstance[] = await query.findAllUsers();
-
+    if(!users) { return res.status(404).end(`get users/ : admin but not found user list`);}
     res.send(users);
-  } catch (error) {
-    return res.status(404).send();
+  } catch (err) {
+    return res.status(404).end(`get users: ${err}`);
   }
 });
 
 router.get('/:id', async (req: express.Request, res: express.Response) => {
   const id = req.params.id;
-  const user = await query.findUserById({ id });
-  res.send(user);
+  try {
+    const user = await query.findUserById({ id });  
+    if(!user) { return res.status(404).end('get users/:id : not found user');}
+    res.send(user);
+  } catch (err) {
+    return res.status(404).end(`get users/:id : ${err}`);
+  }
+  
+  
 });
 
 router.put("/", async (req: express.Request, res: express.Response) => {
@@ -44,9 +52,10 @@ router.put("/", async (req: express.Request, res: express.Response) => {
     const position = req.body.position;
 
     const updated_user = await query.updateUserInfo({ id, name, age, phone_number, email, job, position });
+    if(!updated_user) { return res.status(404).end(`put users/ : not found updated_user`);}
     res.send(updated_user);
   } catch (err) {
-    return res.status(500).send(err); // err : user 정보 업데이트 실패
+    return res.status(500).send(`put users/ : ${err}`); // err : user 정보 업데이트 실패
   }
 });
 
