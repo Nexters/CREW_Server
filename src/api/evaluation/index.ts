@@ -14,7 +14,7 @@ router.use(mw.corsMiddleware);
 router.options('*', mw.corsMiddleware);
 
 
-router.get('/', async (req: express.Request, res: express.Response) => {
+router.get('/read', async (req: express.Request, res: express.Response) => {
   const user_id = req.query.user_id;
 
   let user_admin_id = req.user.id;

@@ -3,7 +3,7 @@
 * score 는 반드시 0보다 크거나 같으며  100보다 작거나 같다.
 * score 는 반드시 숫자이다
 
-ㄱ. get:  http://localhost:3000/evaluation?user_id=유저번호
+ㄱ. get:  http://localhost:3000/evaluation/read?user_id=유저번호
                 해당되는 user_id 의 모든 평가를 읽는다.
 ㄴ. put : http://localhost:3000/evaluation?user_id=유저번호
                 해당되는 user_id 쿼리에 명시된 유저의 현재 인증된 admin 의 평가를 생성/수정한다 
