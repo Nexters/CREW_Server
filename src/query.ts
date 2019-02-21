@@ -1,17 +1,17 @@
 import { db } from "./app";
 import { EvaluationInstance } from "./models/evaluation";
-import AppResult, { FormJsonSkeleton, FormElementSkeleton, getPositionTypeAsEnum, buildDescription, getFormTypeAsEnum } from "./util/index";
 import { UserInstance } from "./models/user";
 import { PositionType, FormType } from './models/form';
-
+import { FormJsonSkeleton, FormElementSkeleton, getPositionTypeAsEnum, getFormTypeAsEnum } from './util/index';
 
 
 
 export async function findUserById({ id }) {
   const user = await db.User.findByPk(id);
   if (!user) {
+    return null;
   }
-  return new AppResult(null, 200, null, null);
+  return user;
 };
 
 export async function findUserByProvider({
@@ -20,9 +20,9 @@ export async function findUserByProvider({
 }) {
   const user = await db.User.find({ where: { member_provider, member_provider_number } });
   if (!user) {
-    return new AppResult(null, 200, null, null);
+    return null;
   }
-  return new AppResult(user, 200, null, null);
+  return user;
 }
 
 export async function createUser({
@@ -38,9 +38,9 @@ export async function createUser({
     token
   });
   if (!newUser) {
-    return new AppResult(null, 200, null, null);
+    return null;
   }
-  return new AppResult(newUser, 200, null, null);
+  return newUser;
 }
 
 export async function updateUserInfo({ id, age, name, phone_number, email, job, position }) {
@@ -55,7 +55,7 @@ export async function updateUserInfo({ id, age, name, phone_number, email, job, 
     },
     { where: { id } }
   );
-  return new AppResult(updated_user, 200, null, null);
+  return updated_user;
 }
 
 export async function getEvaluationByUserId({ user_id }) {
@@ -65,73 +65,125 @@ export async function getEvaluationByUserId({ user_id }) {
     }
   })
   if (!evaluation) {
-    return new AppResult(null, 200, null, null);
+    return null;
   }
-  return new AppResult(evaluation, 200, null, null);
+  return evaluation;
 }
 
 export async function findResumesByUserId({ user_id }) {
   const resumes = await db.Resume.findAll({ where: { user_id } });
   if (!resumes) {
-    return new AppResult(null, 200, null, null);
+    return null;
   }
-  return new AppResult(resumes, 200, null, null);
+  return resumes;
 }
 
 
-export async function upsertEvaluationByUserId({
+export async function upsertEvaluationByUserId(
   user_admin_id,
   user_id,
   score,
   comment
-}) {
+) {
 
 
   const isExist = await db.Evaluation.findOne({
     where: {
-      user_admin_id: user_admin_id,
-      user_id: user_id,
+      user_admin_id,
+      user_id,
     }
   });
-
   if (!isExist) {
-    const newEvaluation = await db.Evaluation.create(
-      {
-        user_admin_id,
-        user_id,
-        score,
-        comment
-      }
-    )
+    let newEvaluation;
+    try {
 
-    if (!newEvaluation) {
-      return new AppResult(null, 504, "query.ts : upsertEvaluationByUserId  ", "failed_to_create_new_evaluation"); // return 
+      newEvaluation = await db.Evaluation.create(
+        {
+          user_admin_id: user_admin_id,
+          user_id: user_id,
+          score: score,
+          comment: comment
+        }
+      )
+
+    } catch (err) {
+      return false;
     }
-    return new AppResult(newEvaluation, 200, null, null);// return 
+    if (!newEvaluation) {
+      return null;
+    }
+    return true;
   }
+
+
 
   const updateEvaluation = await db.Evaluation.update(
     {
-      score,
-      comment
+      score: score,
+      comment: comment
     }, {
       where: {
-        user_admin_id,
+        user_admin_id: user_admin_id,
         user_id: user_id
       }
     }
   )
-  return new AppResult(updateEvaluation, 200, null, null);
+
+  if (!updateEvaluation) {
+    return null;
+  }
+  return true;
+
+
 }
 
 export async function findUserAdmin({ id }) {
-  const admin = await db.User.find({ where: { id, status: 'admin' } });
+  const admin = await db.User.find({ where: { id: id, status: 'admin' } });
   if (!admin) {
-    return new AppResult(null, 200, null, null);
+    return null;
   }
-  return new AppResult(admin, 200, null, null);
+  return admin;
 }
 
+
+export async function findFormById({ form_id }) {
+  const form = await db.Form.findByPk(form_id);
+  if (!form) { return null }
+  return form;
+}
+
+export async function updateORcreateResume({
+  answer,
+  form_id,
+  user_id
+}) {
+  const isExist = db.Resume.findOne({
+    where: {
+      form_id: form_id,
+      user_id: user_id
+    }
+  });
+
+  if (isExist) {
+    const updateResume = db.Resume.update({
+      answer
+    }, {
+        where: {
+          form_id: form_id,
+          user_id: user_id
+        }
+      }
+    )
+    return updateResume;
+  }
+  const createResume = db.Resume.create({
+    answer,
+    form_id,
+    user_id
+  });
+
+  return createResume;
+}
 
 export async function findAllUsers() {
   const users: UserInstance[] = await db.User.findAll();
@@ -149,42 +201,62 @@ export async function getForm(position: PositionType) {
     }
   })
   if (!dbResult) {
-    return new AppResult(null, 504, "query.ts/getForm", "failed_to_get_form_data");
+    return null;
   }
-  return new AppResult(dbResult, 200, null, null);
+  return dbResult;
 }
 
 
-export async function createForm(data: FormJsonSkeleton) {
-  // TODO 관리자권환 확인하기
-  // TODO UPDATE 
-  // TOOD 
-
+export async function upsertForm(data: FormJsonSkeleton) {
 
   let refinedData: FormElementSkeleton[] = data.form;
 
-  let sFlag = true; // 모든 create 가 성공했는지 저장한다
+  let sFlag = true; // 모든 create/update 가 성공했는지 저장한다
   let fIdx = 0; // 몇 번 째 시도에서 실패했는지 저장한다
-  let dbResult, question_num, rawDescription;
-  var position, type;
+  let dbResult, question_num, description, rawOptions, options, position, type;
 
   for (let i = 0; i < refinedData.length; i++) {
 
     position = getPositionTypeAsEnum(refinedData[i])
     type = getFormTypeAsEnum(refinedData[i]);
-    
+
     question_num = refinedData[i].question_num,
-    rawDescription = refinedData[i].description;
+      description = refinedData[i].description;
+    rawOptions = refinedData[i].options;
 
-    let description = buildDescription(rawDescription);
+    options = JSON.stringify(rawOptions);
 
-    dbResult = await Promise.all([db.Form.create({
-      position,
-      question_num,
-      description,
-      type
-    })
-    ])
+
+    let isFormExist = await db.Form.findOne({ where: { question_num: question_num, position: position } });
+
+    if (!isFormExist) {
+
+      dbResult = await Promise.all([db.Form.create({
+        position,
+        question_num,
+        description,
+        options,
+        type
+      })
+      ])
+
+    } else {
+
+      dbResult = await Promise.all([db.Form.update({
+        position,
+        question_num,
+        description,
+        options,
+        type
+      }, {
+          where: {
+            question_num: question_num,
+            position: position
+          }
+        })
+      ])
+
+    }
 
     if (!dbResult) {
       sFlag = false;
@@ -192,13 +264,29 @@ export async function createForm(data: FormJsonSkeleton) {
     }
 
   }
+
   if (!sFlag) {
-    return new AppResult(null, 504, "query.ts/createForm", "create_form_error_while_" + fIdx + "(th/st) try");
+    return false;
   }
 
-  return new AppResult(dbResult, 200, null, null);
+  return refinedData;
+}
 
+export async function deleteFormItem({ question_num, position }) {
 
+  let result;
+
+  result = await db.Form.destroy({
+    where: {
+      position,
+      question_num
+    }
+  })
+
+  if (!result) {
+    return false;
+  }
+  return true;
 
 
 }

@@ -9,8 +9,6 @@ import evaluation from "./api/evaluation/index";
 import form from "./api/form/index";
 import { createModels } from "./models/index";
 
-import  AppResultClass from "./util/index"
-
 
 const env = process.env.NODE_ENV || 'development';
 const config = require("./config/config")[env];

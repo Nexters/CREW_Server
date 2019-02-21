@@ -2,7 +2,6 @@ import express from "express";
 import * as query from "../../query";
 import * as mw from "../../middleware";
 import { UserInstance } from "../../models/user";
-import AppResult from "../../util/index"
 
 const router = express.Router();
 
@@ -14,10 +13,10 @@ router.use('*', mw.corsMiddleware);
 
 router.get('/', async (req: express.Request, res: express.Response) => {
   try {
-    const id = req.user.id;
-    const admin: AppResult = await query.findUserAdmin({ id: id });
+    const admin_id = req.user.id;
+    const admin = await query.findUserAdmin({ id : admin_id });
     if (!admin) {
-      const user: AppResult = await query.findUserById({ id });
+      const user  = await query.findUserById({ id : admin_id });
       res.send(user);
     }
     const users: UserInstance[] = await query.findAllUsers();

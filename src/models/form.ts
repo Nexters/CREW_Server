@@ -51,6 +51,9 @@ export const FormFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
     description :{
       type : DataTypes.STRING
     },
+    options : {
+      type : DataTypes.STRING,
+    },
     type: {
       type: DataTypes.ENUM(FormType.Short_Answer, FormType.Long_Answer, FormType.Selector, FormType.Upload)
     }
