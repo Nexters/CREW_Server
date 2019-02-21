@@ -114,7 +114,7 @@ passport.use(new FacebookStrategy({
   const avatar_url = profile.photos ? profile.photos[0].value : null
  try { 
    const user = await query.findUserByProvider({member_provider: 'facebook', member_provider_number: profile.id});
-   if(user.result) { 
+   if(user) { 
      done(null, user) 
    }else{
     const newUser = await query.createUser({
@@ -132,18 +132,6 @@ passport.use(new FacebookStrategy({
    done(error); 
  }
 }))
-
-router.get('/', (req: express.Request, res: express.Response) => {
-  res.render('auth.pug')
-});
-
-router.get('/success', loginRequired, (req: express.Request, res: express.Response) => {
-  const token = jwt.sign({ 'id': req.user.id }, `${process.env.JWT_SECRET}`)
-  res.render('success.pug', {
-    token,
-    'origin': process.env.TARGET_ORIGIN
-  })
-});
 
 router.get('/google', passport.authenticate('google', { scope: ["profile", "email"] }));
 
@@ -213,5 +201,19 @@ router.get('/facebook/callback', (req: express.Request, res: express.Response, n
     })
   })(req, res, next)
 })
+
+
+
+router.get('/', (req: express.Request, res: express.Response) => {
+  res.render('auth.pug')
+});
+
+router.get('/success', loginRequired, (req: express.Request, res: express.Response) => {
+  const token = jwt.sign({ 'id': req.user.id }, `${process.env.JWT_SECRET}`)
+  res.render('success.pug', {
+    token,
+    'origin': process.env.TARGET_ORIGIN
+  })
+});
 
 export default router;
