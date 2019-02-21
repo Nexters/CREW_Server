@@ -9,7 +9,6 @@ import path from "path";
 import { ResumeInstance } from "../../models/resume";
 import { UserInstance } from "../../models/user";
 import { FormType } from "../../models/form";
-import AppResult from "../../util/index";
 
 
 const router = express.Router();
@@ -54,7 +53,7 @@ router.options('*', mw.corsMiddleware);
 router.get('/', async (req: express.Request, res: express.Response) => {
   const user_id = req.user.id;
   try {
-    const resumes : AppResult = await query.findResumesByUserId({user_id});
+    const resumes = await query.findResumesByUserId({user_id});
     res.send(resumes);
   } catch (err) {
     return res.status(404).end(`get resume: ${err}`);
@@ -65,9 +64,9 @@ router.get('/read', async (req: express.Request, res: express.Response) => {
   const admin_id = req.user.id;
   const user_id = req.query.user_id
   try {
-    const admin: AppResult = await query.findUserAdmin({id: admin_id});
+    const admin = await query.findUserAdmin({id: admin_id});
     if(!admin) { return res.status(404).end(); }
-    const resumes: AppResult = await query.findResumesByUserId({user_id});
+    const resumes = await query.findResumesByUserId({user_id});
     res.send(resumes);
   } catch (err) {
     return res.status(404).end(`get resumes/read: ${err}`);
