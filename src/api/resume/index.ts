@@ -25,7 +25,7 @@ const s3upload = multer({
     bucket: process.env.S3_BUCKET_NAME,
     key: (req, file, cb) => {
       const ext = path.extname(file.originalname);
-      const fileName = `${uuid.v4()}.${ext}`;
+      const fileName = `${uuid.v4()}${ext}`;
       cb(null, fileName);
     },
     contentType: (req, file, cb) => {
