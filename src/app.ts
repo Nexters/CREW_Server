@@ -7,7 +7,6 @@ import auth from "./api/auth/index";
 import resume from "./api/resume/index";
 import evaluation from "./api/evaluation/index";
 import { createModels } from "./models/index";
-import  AppResultClass from "./util/index"
 
 
 const env = process.env.NODE_ENV || 'development';

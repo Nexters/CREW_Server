@@ -1,15 +1,14 @@
 import { db } from "./app";
 import { EvaluationInstance } from "./models/evaluation";
-import AppResult from "./util/index";
 import { UserInstance } from "./models/user";
 
 
 export async function findUserById({ id }) {
   const user = await db.User.findByPk(id);
   if (!user) { 
-    return new AppResult(null,200,null,null);
+    return null;
     }
-  return new AppResult(user,200,null,null);
+  return user;
 };
 
 export async function findUserByProvider({
@@ -18,9 +17,9 @@ export async function findUserByProvider({
 }) {
   const user = await db.User.find({ where: { member_provider, member_provider_number } });
   if (!user) {
-      return new AppResult(null,200,null,null);
+      return null;
    }
-  return new AppResult(user,200,null,null);
+  return user;
 }
 
 export async function createUser({
@@ -36,9 +35,9 @@ export async function createUser({
     token
   });
   if (!newUser) { 
-    return new AppResult(null,200,null,null);
+    return null;
    }
-  return new AppResult(newUser,200,null,null);
+  return newUser;
 }
 
 export async function updateUserInfo({ id, age, name, phone_number, email, job, position }) {
@@ -53,7 +52,7 @@ export async function updateUserInfo({ id, age, name, phone_number, email, job, 
     },
     { where: { id } }
   );
-  return new AppResult(updated_user,200,null,null);
+  return updated_user;
 }
 
 export async function getEvaluationByUserId({ user_id }) {
@@ -63,17 +62,17 @@ export async function getEvaluationByUserId({ user_id }) {
     }
   })
   if(!evaluation){
-    return new AppResult(null,200,null,null) ;
+    return null;
   }
-  return new AppResult(evaluation,200,null,null);
+  return evaluation;
 }
 
 export async function findResumesByUserId({user_id}) {
   const resumes = await db.Resume.findAll({where: {user_id}});
   if(!resumes) { 
-    return new AppResult(null,200,null,null);
+    return null;
   }
-  return new AppResult(resumes,200,null,null);
+  return resumes;
 }
 
 
@@ -103,9 +102,9 @@ export async function upsertEvaluationByUserId({
     )
 
     if (!newEvaluation) {
-      return new AppResult(null,504,"query.ts : upsertEvaluationByUserId  ","failed_to_create_new_evaluation"); // return 
+      return null;
     }
-    return new AppResult(newEvaluation,200,null,null);// return 
+    return newEvaluation;
   }
 
   const updateEvaluation = await db.Evaluation.update(
@@ -119,15 +118,15 @@ export async function upsertEvaluationByUserId({
       }
     }
   )
-  return new AppResult(updateEvaluation,200,null,null);
+  return updateEvaluation;
 }
 
 export async function findUserAdmin({id}) {
-  const admin = await db.User.find({where: {id, status: 'admin'}});
+  const admin = await db.User.find({where: { id : id , status: 'admin'}});
   if(!admin) { 
-    return new AppResult(null,200,null,null);
+    return null;
    }
-  return new AppResult(admin,200,null,null);
+  return admin;
 }
 
 

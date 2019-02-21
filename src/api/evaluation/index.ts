@@ -3,7 +3,6 @@ import * as query from "../../query";
 import * as mw from "../../middleware";
 import { EvaluationAttributes } from "../../models/evaluation";
 import { db } from "../../app";
-import AppResult  from "../../util/index";
 
 const router = express.Router();
 
@@ -15,41 +14,56 @@ router.use(mw.corsMiddleware);
 router.options('*', mw.corsMiddleware);
 
 
-router.get('/', async (req: express.Request, res: express.Response) => { 
+router.get('/', async (req: express.Request, res: express.Response) => {
   const user_id = req.query.user_id;
 
-  if(!user_id){
-    return new AppResult(null,404,"/evaluation get ","error_not_specified_user_id").Excute(res);
+  let user_admin_id = req.user.id;
+  
+  let isUserAdmin = await query.findUserAdmin({id : user_admin_id});
+
+  if (!isUserAdmin) {
+    return res.status(403).end("at evaluation get : clinet is not authorized");
   }
-  try{
 
-    const evaluation   = await query.getEvaluationByUserId({user_id});
-    evaluation.Excute(res);
 
-  }catch(err){
-    return new AppResult(null,504,"get : /evaluation ",err).Excute(res);
+  if (!user_id) {
+    return res.status(404).end("at evaluation get : specified user does not exists");
+  }
+  try {
+
+    const evaluation = await query.getEvaluationByUserId({ user_id });
+    return res.send(evaluation);
+
+  } catch (err) {
+    return res.status(504).end("at evaluation, unknow server error, it is probably matter of server or database server");
   }
 });
 
-router.post('/', async (req: express.Request, res: express.Response) => { 
+router.post('/', async (req: express.Request, res: express.Response) => {
   const user_id = req.query.user_id;
 
   const score = req.body.score;
   const comment = req.body.comment;
-  const user_admin_id = req.user.id;
 
+  let user_admin_id = req.user.id;
+
+  let isUserAdmin = await query.findUserAdmin({id : user_admin_id});
   
+  if (!isUserAdmin) {
+    return res.status(403).send("/evaluation post, user is not authorize as admin");
+  }
+
   try {
-    const result : AppResult = await query.upsertEvaluationByUserId({
+    const result = await query.upsertEvaluationByUserId({
       user_admin_id,
       user_id,
       score,
-    comment
+      comment
     })
-    
-    return result.Excute(res);
+
+    return res.send(result);
   } catch (err) {
-    return new AppResult(null,504,"post evaluation","failed_to_await").Excute(res);
+    return res.status(504).end("at evaluation, unknow server error, it is probably matter of server or database server");
   }
 });
 
