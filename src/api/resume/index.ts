@@ -57,7 +57,7 @@ router.get('/', async (req: express.Request, res: express.Response) => {
     const resumes : AppResult = await query.findResumesByUserId({user_id});
     res.send(resumes);
   } catch (err) {
-    return res.status(404).end();
+    return res.status(404).end(`get resume: ${err}`);
   }
 });
 
@@ -69,8 +69,8 @@ router.get('/read', async (req: express.Request, res: express.Response) => {
     if(!admin) { return res.status(404).end(); }
     const resumes: AppResult = await query.findResumesByUserId({user_id});
     res.send(resumes);
-  } catch (error) {
-    return res.status(404).end();
+  } catch (err) {
+    return res.status(404).end(`get resumes/read: ${err}`);
   }
 });
 
@@ -85,18 +85,18 @@ router.post('/', s3upload.single('pdfFile'), async (req: express.Request, res: e
     if (!form) { return res.status(404).end() }
     if (form.type == FormType.Upload) {
       if(req.file == undefined) {
-        return res.status(404).end()
+        return res.status(404).end('post resumes: file undefined');
       }
       const answer = (req.file as any).location;
       const Resume = await query.updateORcreateResume({answer, form_id, user_id});
-      if(!Resume) { return res.status(404).end() }
+      if(!Resume) { return res.status(404).end('post resumes: resume(upload type) not found'); }
       res.send(Resume);
     }
     const Resume = await query.updateORcreateResume({answer, form_id, user_id});
-    if(!Resume) { return res.status(404).end() }
+    if(!Resume) { return res.status(404).end(`post resumes: resume(not upload type)`) }
     res.send(Resume);
   } catch (err) {
-    return res.status(404).end();
+    return res.status(404).end(`post resumes: ${err} `);
   }
 });
 
