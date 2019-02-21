@@ -7,7 +7,6 @@ import auth from "./api/auth/index";
 import resume from "./api/resume/index";
 import evaluation from "./api/evaluation/index";
 import { createModels } from "./models/index";
-import  AppResultClass from "./util/index"
 
 
 const env = process.env.NODE_ENV || 'development';
@@ -17,10 +16,10 @@ config.freezeTableName = true;
 const app = express();
 export const db = createModels(config);
 
-app.use('/user', user);
-app.use('/auth', auth);
+app.use('/users', user);
+app.use('/auths', auth);
 app.use('/resumes', resume);
-app.use('/evaluation',evaluation);
+app.use('/evaluations',evaluation);
 app.set('view engine', 'pug')
 
 app.get('/', (req: express.Request, res: express.Response) => {
