@@ -17,7 +17,7 @@ const app = express();
 export const db = createModels(config);
 
 app.use('/users', user);
-app.use('/auths', auth);
+app.use('/auth', auth);
 app.use('/resumes', resume);
 app.use('/evaluations',evaluation);
 app.set('view engine', 'pug')

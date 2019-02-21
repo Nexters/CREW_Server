@@ -139,7 +139,7 @@ export async function updateORcreateResume({
   form_id,
   user_id
 }) {
-  const isExist = db.Resume.findOne({
+  const isExist = await db.Resume.findOne({
     where: {
       form_id: form_id, 
       user_id: user_id
@@ -147,7 +147,7 @@ export async function updateORcreateResume({
   });
 
   if(isExist) {
-    const updateResume = db.Resume.update({
+    const updateResume = await db.Resume.update({
       answer
     },{
       where: {
@@ -158,12 +158,12 @@ export async function updateORcreateResume({
     )
     return updateResume;
   }
-  const createResume = db.Resume.create({
+  
+  const createResume = await db.Resume.create({
     answer,
     form_id,
     user_id
   });
-
   return createResume;
 }
 
