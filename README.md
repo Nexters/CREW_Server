@@ -186,12 +186,12 @@
  * position 은 Developer, Designer 로 명시한다.
  * 입력데이터 JSON 의 최상위 부모는 form 이다.
  
- ㄱ. get : form?position=직군명 ( Developer 혹은 Designer )
+ ㄱ. get : forms?position=직군명 ( Developer 혹은 Designer )
          position 쿼리에 명시된 position 의 모든 form data 를 읽는다
- ㄴ. put : form
+ ㄴ. post : forms
          body 에 입력하여 서버에 데이터를 보내 생성/업데이트 한다.
- ㄷ. delte : form?position=Developer&question_num=0
-         position 과 question_num 으로 특정된 form 의 item 을 삭제한다.
+ ㄷ. delte : forms/:id
+         form_id를 가져와서 form을 삭제한다.
 
 ### [ DETAILS ]
 
@@ -211,7 +211,7 @@
             오류사유를 반환한다         
    
 
-#### PUT METHOD :  ** 관리자 권한 ** 
+#### POST METHOD :  ** 관리자 권한 ** 
 
  1. 입력데이터
 
@@ -281,7 +281,7 @@
 #### DELETE METHOD :  ** 관리자권한 ** 
 
 
-1.   form?position=Developer&question_num=0
+1.   forms/:id
 
 2. 예상되는 결과값 
 
