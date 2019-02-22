@@ -192,17 +192,17 @@ export async function findAllUsers() {
 }
 
 
-
-export async function getForm(position: PositionType) {
-
+export async function getForm({position}) {
+  
   const dbResult = await db.Form.findAll({
     where: {
       position: position
     }
-  })
+  });
   if (!dbResult) {
     return null;
   }
+  
   return dbResult;
 }
 
@@ -272,17 +272,11 @@ export async function upsertForm(data: FormJsonSkeleton) {
   return refinedData;
 }
 
-export async function deleteFormItem({ question_num, position }) {
+export async function deleteFormItem({ form_id }) {
 
   let result;
 
-  result = await db.Form.destroy({
-    where: {
-      position,
-      question_num
-    }
-  })
-
+  result = await db.Form.destroy({where: {id: form_id}})
   if (!result) {
     return false;
   }
