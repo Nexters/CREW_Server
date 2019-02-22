@@ -1,4 +1,4 @@
-import Sequelize from "sequelize"
+import Sequelize, { json } from "sequelize"
 import { SequelizeAttributes } from "./index.d";
 import { ResumeInstance, ResumeAttributes } from "./resume";
 
@@ -9,16 +9,18 @@ export enum FormType {
   Upload = "Upload"
 }
 
-enum PositionType {
+export enum PositionType {
   Developer = "Developer",
   Designer = "Designer"
 }
+
 
 export interface FormAttributes {
   id?: number;
   position: PositionType;
   question_num: number;
   description?: string;
+  options? :  string;
   type: FormType;
   created_at?: Date;
   updated_at?: Date;
@@ -46,8 +48,11 @@ export const FormFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
     question_num: {
       type: DataTypes.INTEGER
     },
-    description: {
-      type: DataTypes.STRING
+    description :{
+      type : DataTypes.STRING
+    },
+    options : {
+      type : DataTypes.STRING,
     },
     type: {
       type: DataTypes.ENUM(FormType.Short_Answer, FormType.Long_Answer, FormType.Selector, FormType.Upload)

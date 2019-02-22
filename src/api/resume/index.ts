@@ -6,8 +6,6 @@ import multerS3 from "multer-s3";
 import AWS from "aws-sdk";
 import uuid from "uuid";
 import path from "path";
-import { ResumeInstance } from "../../models/resume";
-import { UserInstance } from "../../models/user";
 import { FormType } from "../../models/form";
 
 

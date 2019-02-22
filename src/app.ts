@@ -9,6 +9,7 @@ import auth from "./api/auth/index";
 import mail from "./api/mail/index";
 import resume from "./api/resume/index";
 import evaluation from "./api/evaluation/index";
+import form from "./api/form/index";
 import { createModels } from "./models/index";
 
 
@@ -22,11 +23,14 @@ export const db = createModels(config);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use('/user', user);
+app.use('/users', user);
 app.use('/auth', auth);
 app.use('/mail', mail);
 app.use('/resumes', resume);
 app.use('/evaluations',evaluation);
+app.use('/forms',form);
+
+
 app.set('view engine', 'pug')
 
 app.get('/', (req: express.Request, res: express.Response) => {
