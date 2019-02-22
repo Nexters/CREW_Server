@@ -8,6 +8,8 @@ export interface ResumeAttributes {
   answer?: string;
   created_at?: Date;
   updated_at?: Date;
+  user_id?: UserAttributes | UserAttributes['id'];
+  form_id?: FormAttributes | FormAttributes['id'];
 }
 
 
@@ -15,7 +17,7 @@ export interface ResumeInstance extends Sequelize.Instance<ResumeAttributes>, Re
   getUser: Sequelize.BelongsToGetAssociationMixin<UserInstance>;
   setUser: Sequelize.BelongsToSetAssociationMixin<UserInstance, UserInstance['id']>;
   createUser: Sequelize.BelongsToCreateAssociationMixin<UserAttributes, UserInstance>;
-
+  
   getForm: Sequelize.BelongsToGetAssociationMixin<FormInstance>;
   setForm: Sequelize.BelongsToSetAssociationMixin<FormInstance, FormInstance['id']>;
   createForm: Sequelize.BelongsToCreateAssociationMixin<FormAttributes, FormInstance>;

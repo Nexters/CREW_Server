@@ -10,9 +10,9 @@ import cookieParser from "cookie-parser";
 import flash from "connect-flash";
 import jwt from "jsonwebtoken";
 import * as FacebookPassport from 'passport-facebook';
-import { db } from "../../app";
 import { insertReq, insertToken, loginRequired } from "../../middleware";
 import { UserAttributes } from "../../models/user";
+import * as query from "../../query";
 
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const KakaoStrategy = require('passport-kakao').Strategy
@@ -35,14 +35,14 @@ router.use(flash());
 router.use(passport.initialize());
 router.use(passport.session());
 
-passport.serializeUser((user: UserAttributes, done) => {
+passport.serializeUser((user:UserAttributes, done) => {
   done(null, `${user.member_provider}:${user.member_provider_number}`)
 });
 
 passport.deserializeUser(async (str: String, done) => {
   const [member_provider, member_provider_number] = str.split(':')
   try { 
-    const user = await db.User.find({where: {member_provider, member_provider_number}})
+    const user = await query.findUserByProvider({member_provider, member_provider_number});
     if(user) { done(null, user)}  
   } catch (error) {
     console.error(error);
@@ -57,11 +57,11 @@ passport.use(new GoogleStrategy({
 }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
   const avatar_url = profile.photos[0] ? profile.photos[0].value : null
   try {
-    const user = await db.User.find({ where: { member_provider: 'google', member_provider_number: profile.id } })
+    const user = await query.findUserByProvider({member_provider: 'google', member_provider_number: profile.id});
     if (user) {
       done(null, user)
     } else {
-      const newUser = await db.User.create({
+      const newUser = await query.createUser({
         member_provider: 'google',
         member_provider_number: profile.id,
         provide_image: avatar_url,
@@ -84,11 +84,11 @@ passport.use('kakao', new KakaoStrategy({
 }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
   const avatar_url = profile._json.properties.profile_image ? profile._json.properties.profile_image : null
   try {
-    const user = await db.User.find({ where: { member_provider: 'kakao', member_provider_number: profile.id } })
+    const user = await query.findUserByProvider({member_provider: 'kakao', member_provider_number: profile.id});
     if (user) {
       done(null, user)
     } else {
-      const newUser = await db.User.create({
+      const newUser = await query.createUser({
         member_provider: 'kakao',
         member_provider_number: profile.id,
         provide_image: avatar_url,
@@ -113,16 +113,16 @@ passport.use(new FacebookStrategy({
 }, async (req : express.Request  ,accessToken : string ,refreshToken : string, profile ,done) => {
   const avatar_url = profile.photos ? profile.photos[0].value : null
  try { 
-   const user = await db.User.find({where : { member_provider : 'facebook', member_provider_number : profile.id  }})
+   const user = await query.findUserByProvider({member_provider: 'facebook', member_provider_number: profile.id});
    if(user) { 
      done(null, user) 
    }else{
-     const newUser = await db.User.create({
-       member_provider : 'facebook' ,
-       member_provider_number : profile.id,
-       provide_image: avatar_url,
-       token : accessToken
-     })
+    const newUser = await query.createUser({
+      member_provider: 'facebook',
+      member_provider_number: profile.id,
+      provide_image: avatar_url,
+      token: accessToken
+    })
      if(newUser) {
        done(null,newUser) ; 
      }
@@ -132,18 +132,6 @@ passport.use(new FacebookStrategy({
    done(error); 
  }
 }))
-
-router.get('/', (req: express.Request, res: express.Response) => {
-  res.render('auth.pug')
-});
-
-router.get('/success', loginRequired, (req: express.Request, res: express.Response) => {
-  const token = jwt.sign({ 'id': req.user.id }, `${process.env.JWT_SECRET}`)
-  res.render('success.pug', {
-    token,
-    'origin': process.env.TARGET_ORIGIN
-  })
-});
 
 router.get('/google', passport.authenticate('google', { scope: ["profile", "email"] }));
 
@@ -163,7 +151,7 @@ router.get('/google/callback', (req: express.Request, res: express.Response, nex
         return next(err)
       }
       // 로그인 성공
-      res.redirect(`${req.baseUrl}/success`)
+      res.redirect(`${process.env.TARGET_ORIGIN}/auth`)
     })
   })(req, res, next)
 })
@@ -183,7 +171,8 @@ router.get('/kakao/callback', (req: express.Request, res: express.Response, next
       if (err) {
         return next(err);
       }
-      res.redirect(`${req.baseUrl}/success`);    
+      console.log(`kakao: ~~ ${process.env.TARGET_ORIGIN}/auth`)
+      res.redirect(`${process.env.TARGET_ORIGIN}/auth`)  
     })
   })(req, res, next)
 })
@@ -209,9 +198,24 @@ router.get('/facebook/callback', (req: express.Request, res: express.Response, n
         return next(err)
       }
       // 로그인 성공
-      res.redirect(`${req.baseUrl}/success`)
+      res.redirect(`${process.env.TARGET_ORIGIN}/auth`)
     })
   })(req, res, next)
 })
+
+
+
+router.get('/', (req: express.Request, res: express.Response) => {
+  res.render('auth.pug')
+});
+
+router.get('/success', loginRequired, (req: express.Request, res: express.Response) => {
+  const token = jwt.sign({ 'id': req.user.id }, `${process.env.JWT_SECRET}`)
+  res.render('success.pug', {
+    token,
+    'origin': process.env.TARGET_ORIGIN
+  })
+  
+});
 
 export default router;

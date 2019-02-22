@@ -29,12 +29,11 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const connect_flash_1 = __importDefault(require("connect-flash"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const FacebookPassport = __importStar(require("passport-facebook"));
-const app_1 = require("../../app");
 const middleware_1 = require("../../middleware");
+const query = __importStar(require("../../query"));
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const KakaoStrategy = require('passport-kakao').Strategy;
 const FacebookStrategy = FacebookPassport.Strategy;
-
 const router = express_1.default.Router();
 router.use(express_1.default.json());
 router.use(body_parser_1.default.urlencoded({ extended: false }));
@@ -57,7 +56,7 @@ passport_1.default.serializeUser((user, done) => {
 passport_1.default.deserializeUser((str, done) => __awaiter(this, void 0, void 0, function* () {
     const [member_provider, member_provider_number] = str.split(':');
     try {
-        const user = yield app_1.db.User.find({ where: { member_provider, member_provider_number } });
+        const user = yield query.findUserByProvider({ member_provider, member_provider_number });
         if (user) {
             done(null, user);
         }
@@ -73,12 +72,12 @@ passport_1.default.use(new GoogleStrategy({
 }, (accessToken, refreshToken, profile, done) => __awaiter(this, void 0, void 0, function* () {
     const avatar_url = profile.photos[0] ? profile.photos[0].value : null;
     try {
-        const user = yield app_1.db.User.find({ where: { member_provider: 'google', member_provider_number: profile.id } });
+        const user = yield query.findUserByProvider({ member_provider: 'google', member_provider_number: profile.id });
         if (user) {
             done(null, user);
         }
         else {
-            const newUser = yield app_1.db.User.create({
+            const newUser = yield query.createUser({
                 member_provider: 'google',
                 member_provider_number: profile.id,
                 provide_image: avatar_url,
@@ -94,19 +93,19 @@ passport_1.default.use(new GoogleStrategy({
         done(error);
     }
 })));
-
 passport_1.default.use('kakao', new KakaoStrategy({
     clientID: process.env.KAKAO_CLIENT_ID,
+    clientSecret: process.env.KAKAO_CLIENT_SECRET,
     callbackURL: process.env.KAKAO_CALLBACK_URL
 }, (accessToken, refreshToken, profile, done) => __awaiter(this, void 0, void 0, function* () {
-    const avatar_url = profile.photos[0] ? profile.photos[0].value : null;
+    const avatar_url = profile._json.properties.profile_image ? profile._json.properties.profile_image : null;
     try {
-        const user = yield app_1.db.User.find({ where: { member_provider: 'kakao', member_provider_number: profile.id } });
+        const user = yield query.findUserByProvider({ member_provider: 'kakao', member_provider_number: profile.id });
         if (user) {
             done(null, user);
         }
         else {
-            const newUser = yield app_1.db.User.create({
+            const newUser = yield query.createUser({
                 member_provider: 'kakao',
                 member_provider_number: profile.id,
                 provide_image: avatar_url,
@@ -122,7 +121,6 @@ passport_1.default.use('kakao', new KakaoStrategy({
         done(error);
     }
 })));
-
 passport_1.default.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_CLIENT_ID,
     clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
@@ -130,17 +128,14 @@ passport_1.default.use(new FacebookStrategy({
     profileFields: ["email", "link", "locale", "timezone", "photos"],
     passReqToCallback: true
 }, (req, accessToken, refreshToken, profile, done) => __awaiter(this, void 0, void 0, function* () {
-    console.log("페이스북 정보 : " + JSON.stringify(profile));
     const avatar_url = profile.photos ? profile.photos[0].value : null;
     try {
-        const user = yield app_1.db.User.find({ where: { member_provider: 'facebook', member_provider_number: profile.id } });
+        const user = yield query.findUserByProvider({ member_provider: 'facebook', member_provider_number: profile.id });
         if (user) {
-            console.log("유저존재: " + profile.id);
             done(null, user);
         }
         else {
-            console.log("유저생성");
-            const newUser = yield app_1.db.User.create({
+            const newUser = yield query.createUser({
                 member_provider: 'facebook',
                 member_provider_number: profile.id,
                 provide_image: avatar_url,
@@ -156,18 +151,6 @@ passport_1.default.use(new FacebookStrategy({
         done(error);
     }
 })));
-
-router.get('/', (req, res) => {
-    res.render('auth.pug');
-});
-router.get('/success', middleware_1.loginRequired, (req, res) => {
-    const token = jsonwebtoken_1.default.sign({ 'id': req.user.id }, `${process.env.JWT_SECRET}`);
-    res.render('success.pug', {
-        token,
-        'origin': process.env.TARGET_ORIGIN
-    });
-});
-
 router.get('/google', passport_1.default.authenticate('google', { scope: ["profile", "email"] }));
 router.get('/google/callback', (req, res, next) => {
     passport_1.default.authenticate('google', (err, user) => {
@@ -185,12 +168,12 @@ router.get('/google/callback', (req, res, next) => {
                 return next(err);
             }
             // 로그인 성공
-            res.redirect(`${req.baseUrl}/success`);
+            res.redirect(`${process.env.TARGET_ORIGIN}/auth`);
         });
     })(req, res, next);
 });
-
 router.get('/kakao', passport_1.default.authenticate('kakao', { failureRedirect: '#!/login' }));
+// Kakao callback url
 router.get('/kakao/callback', (req, res, next) => {
     passport_1.default.authenticate('kakao', (err, user) => {
         if (err) {
@@ -203,37 +186,44 @@ router.get('/kakao/callback', (req, res, next) => {
             if (err) {
                 return next(err);
             }
-            res.redirect(`${req.baseUrl}/success`);
+            console.log(`kakao: ~~ ${process.env.TARGET_ORIGIN}/auth`);
+            res.redirect(`${process.env.TARGET_ORIGIN}/auth`);
         });
     })(req, res, next);
 });
-
 router.get('/facebook', passport_1.default.authenticate('facebook', { scope: ['email'] }));
 router.get('/facebook/callback', (req, res, next) => {
     passport_1.default.authenticate('facebook', {
         session: true,
-        failureRedirect: '/auth',
+        failureRedirect: '/auth'
     }, (err, user) => {
         if (err) {
             // 예상치 못한 예외 발생 시
-            console.log("facebook 로그인 실패 : 예상치 못한 에러 발생");
             return next(err);
         }
         if (!user) {
             // 로그인 실패 시
-            console.log("facebook 로그인 실패 : 유저가 존재하지 않음");
             return res.redirect(req.baseUrl);
         }
         req.logIn(user, err => {
             // 예상치 못한 예외 발생 시
             if (err) {
-                console.log("facebook 로그인 실패 : 예외 발생");
                 return next(err);
             }
             // 로그인 성공
-            res.redirect(`${req.baseUrl}/success`);
+            res.redirect(`${process.env.TARGET_ORIGIN}/auth`);
         });
     })(req, res, next);
+});
+router.get('/', (req, res) => {
+    res.render('auth.pug');
+});
+router.get('/success', middleware_1.loginRequired, (req, res) => {
+    const token = jsonwebtoken_1.default.sign({ 'id': req.user.id }, `${process.env.JWT_SECRET}`);
+    res.render('success.pug', {
+        token,
+        'origin': process.env.TARGET_ORIGIN
+    });
 });
 exports.default = router;
 //# sourceMappingURL=index.js.map

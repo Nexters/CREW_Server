@@ -1,6 +1,7 @@
 import Sequelize from "sequelize";
 import { SequelizeAttributes } from "./index.d";
 import { ResumeInstance, ResumeAttributes } from "./resume";
+import { EvaluationAttributes, EvaluationInstance } from "./evaluation";
 
 enum ApplicantStatus {
   Applicant = "applicant",
@@ -8,6 +9,17 @@ enum ApplicantStatus {
   InterviewPass= "interview_pass",
   Fail = "fail",
   Admin = "admin"
+}
+
+enum JobType {
+  Student = "Student",
+  Prepare = "Prepare",
+  Worker = "Worker"
+}
+
+enum PositionType {
+  Developer = "Developer",
+  Designer = "Designer"
 }
 
 export interface UserAttributes {
@@ -18,11 +30,15 @@ export interface UserAttributes {
   age?: number;
   phone_number?: string;
   email?: string;
+  job?: JobType;
+  position?: PositionType;
   provide_image?: string;
   status?: ApplicantStatus;
   token: string;
   created_at?: Date;
   updated_at?: Date;
+  resumes?: ResumeAttributes[] | ResumeAttributes['id'][];
+  evaluations?: EvaluationAttributes[] | EvaluationAttributes['id'][];
 };
 
 
@@ -30,9 +46,24 @@ export interface UserInstance extends Sequelize.Instance<UserAttributes>, UserAt
   getResume: Sequelize.HasManyGetAssociationsMixin<ResumeInstance>;
   setResume: Sequelize.HasManySetAssociationsMixin<ResumeInstance, ResumeInstance['id']>;
   addResume: Sequelize.HasManyAddAssociationMixin<ResumeInstance, ResumeInstance['id']>;
+  addResumes: Sequelize.HasManyAddAssociationsMixin<ResumeInstance, ResumeInstance['id']>;
   createResume: Sequelize.HasManyCreateAssociationMixin<ResumeAttributes, ResumeInstance>;
   removeResume: Sequelize.HasManyRemoveAssociationMixin<ResumeInstance, ResumeInstance['id']>;
+  removeResumes: Sequelize.HasManyRemoveAssociationsMixin<ResumeInstance, ResumeInstance['id']>;
   hasResume: Sequelize.HasManyHasAssociationMixin<ResumeInstance, ResumeInstance['id']>;
+  hasResumes: Sequelize.HasManyHasAssociationsMixin<ResumeInstance, ResumeInstance['id']>;
+  countResumes: Sequelize.HasManyCountAssociationsMixin;
+  
+  getEvaluation: Sequelize.HasOneGetAssociationMixin<EvaluationInstance>;
+  setEvaluation: Sequelize.HasManySetAssociationsMixin<EvaluationInstance, EvaluationInstance['id']>;
+  addEvaluation: Sequelize.HasManyAddAssociationMixin<EvaluationInstance, EvaluationInstance['id']>;
+  addEvaluations: Sequelize.HasManyAddAssociationsMixin<EvaluationInstance, EvaluationInstance['id']>;
+  createEvaluation: Sequelize.HasManyCreateAssociationMixin<EvaluationAttributes, EvaluationInstance>;
+  removeEvaluation: Sequelize.HasManyRemoveAssociationMixin<EvaluationInstance, EvaluationInstance['id']>;
+  removeEvaluations: Sequelize.HasManyRemoveAssociationsMixin<EvaluationInstance, EvaluationInstance['id']>;
+  hasEvaluation: Sequelize.HasManyHasAssociationMixin<EvaluationInstance, EvaluationInstance['id']>;
+  hasEvaluations: Sequelize.HasManyHasAssociationsMixin<EvaluationInstance, EvaluationInstance['id']>;
+  countEvaluations: Sequelize.HasManyCountAssociationsMixin;
 };
 
 export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize.DataTypes): Sequelize.Model<UserInstance,UserAttributes> => {
@@ -55,6 +86,12 @@ export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
     email: {
       type: DataTypes.STRING
     },
+    job: {
+      type: DataTypes.ENUM(JobType.Student, JobType.Prepare, JobType.Worker)
+    },
+    position: {
+      type: DataTypes.ENUM(PositionType.Developer, PositionType.Designer)
+    },
     provide_image: {
       type: DataTypes.STRING
     },
@@ -69,6 +106,8 @@ export const UserFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize
 
   User.associate = models => {
     User.hasMany(models.Resume, {foreignKey: 'user_id'});
+    User.hasMany(models.Evaluation, {foreignKey: 'user_id'});
+    User.hasMany(models.Evaluation, {foreignKey: 'user_admin_id'});
   }
   return User;
 };
