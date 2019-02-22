@@ -168,7 +168,7 @@ router.get('/google/callback', (req, res, next) => {
                 return next(err);
             }
             // 로그인 성공
-            res.redirect(`${process.env.TARGET_ORIGIN}/auth`);
+            res.redirect(`${req.baseUrl}/success`);
         });
     })(req, res, next);
 });
@@ -187,7 +187,7 @@ router.get('/kakao/callback', (req, res, next) => {
                 return next(err);
             }
             console.log(`kakao: ~~ ${process.env.TARGET_ORIGIN}/auth`);
-            res.redirect(`${process.env.TARGET_ORIGIN}/auth`);
+            res.redirect(`${req.baseUrl}/success`);
         });
     })(req, res, next);
 });
@@ -211,7 +211,7 @@ router.get('/facebook/callback', (req, res, next) => {
                 return next(err);
             }
             // 로그인 성공
-            res.redirect(`${process.env.TARGET_ORIGIN}/auth`);
+            res.redirect(`${req.baseUrl}/success`);
         });
     })(req, res, next);
 });
