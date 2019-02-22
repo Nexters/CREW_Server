@@ -15,7 +15,7 @@ import { createModels } from "./models/index";
 
 const env = process.env.NODE_ENV || 'development';
 const config = require("./config/config")[env];
-
+const port = process.env.PORT || 3000;
 config.freezeTableName = true;
 const app = express();
 export const db = createModels(config);
@@ -44,8 +44,8 @@ const options = {
 db.sequelize.sync(options)
   .then(() => {
     console.log('Sequelize Sync Success')
-    app.listen(3000, () => {
-      console.log('Sever Start');
+    app.listen({port}, () => {
+      console.log(`${port} Sever Start`);
       console.log()
     });
   })
