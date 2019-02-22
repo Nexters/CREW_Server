@@ -8,9 +8,15 @@
 
 # API SPECIFICATION
 
-가. auth/ 
+## 가. auth/ 
+
+
  기능 : 사용자 인증을 확인하거나 발급한다.
- ㄱ. get : auth/ 
+
+
+### ㄱ. get : auth/ 
+
+
                 현재 사용자의 인증정보를 렌더링해준다
            auth/google 
                 구글인증을 요청한다
@@ -24,45 +30,63 @@
                 카카오 인증을 요청한다
            auth/kakao/callback 
                 카카오  인증에 대한 콜백을 받는다      
+
         
-[ DETAILS ] 
-        공통 GET METHOD : 
+### [ DETAILS ] 
+
+
+####  공통 GET METHOD : 
+
+
          성공 시:
                 /auth 로 redirect 한다.
          실패 시: 
                 각자 SERVICE 회사에서 정의한 방식의 오류를 
 
  
-나. resumes/ 
+## 나. resumes/ 
+
  기능 : 지원서를 작성하고 읽어온다
- ㄱ. get : resumes/ 
+
+#### ㄱ. get : 
+
+           resumes/ 
                 자신의 지원서를 읽는다
            resumes/read?user_id=유저아이디
                 관리자 권한이 있는 사용자가 query 에 명시한 유저의 지원서를 조회한다.
- ㄴ. post : resumes/            
+
+#### ㄴ. post : 
+
+            resumes/            
                 지원자가 자신의 지원서를 서버에 제출한다.
 
                      
-[ DETAILS ] 
+### [ DETAILS ] 
 
-GET METHOD : 
+#### GET METHOD : 
 
         A. resumes/ 
+
          1. 입력데이터 : X , user_id = req.user.id
                 
          2. 예상되는 결과값         
+
                 성공 시 : 자신의 지원서를 반환한다
                 실패 시 : 오류사유를 반환한다
 
-        B. resumes/read   ** 관리자권한 ** 
+   
+         B. resumes/read   ** 관리자권한 ** 
+
          1. 입력데이터 : QUERY , user_id , user_id = req.query.user_id ,  admin_id = req.user.id        
          2. 예상되는 결과값
+
                 성공 시 : QUERY 에 명시 된 유저의 지원서를 반환한다
                 실패 시 : 오류사유를 반환한다
          
-POST  METHOD : 
+#### POST  METHOD : 
         
         A. resumes/ 
+
          1. 입력데이터 : 
                  // 예시질문 :  좋아하는 프레임워크는 ?(Short_Answer)
                 {
@@ -78,7 +102,11 @@ POST  METHOD :
                 }  
                 
 
-다. evaluation/ 
+
+
+
+
+## 다. evaluation/ 
  기능 : 지원자들에 대한 운영진들의 평가를 작성하고 읽어온다.
  
  
@@ -86,14 +114,19 @@ POST  METHOD :
 * score 는 반드시 0보다 크거나 같으며  100보다 작거나 같다.
 * score 는 반드시 숫자이다
 
-ㄱ. get:  evaluation/read?user_id=유저번호
+#### ㄱ. get:  
+
+          evaluation/read?user_id=유저번호
                 관리자 권한으로 해당되는 user_id 의 모든 평가를 읽는다.
-ㄴ. put : evaluation?user_id=유저번호
+
+#### ㄴ. put : 
+          
+           evaluation?user_id=유저번호
                 관리자 권한으로 해당되는 user_id 쿼리에 명시된 유저의 현재 인증된 admin 의 평가를 생성/수정한다 
 
-[ DETAILS ]
+###[ DETAILS ]
 
-GET METHOD : ** 관리자 권한 ** 
+#### GET METHOD : ** 관리자 권한 ** 
           
 
 1. 입력데이터
@@ -105,9 +138,13 @@ GET METHOD : ** 관리자 권한 **
     2-2. 실패시
             오류사유를 반환한다        
 
- 성공결과 : 
+성공결과 : 
+
+
+
+
 [
-    {
+      {
         "id": 782,
         "score": 3229,
         "comment": "excellent",
@@ -115,10 +152,13 @@ GET METHOD : ** 관리자 권한 **
         "updated_at": "2019-02-21T05:28:06.000Z",
         "user_id": 4,
         "user_admin_id": 4
-    }
+    } 
 ]
 
-PUT METHOD :  ** 관리자 권한 ** 
+
+
+
+#### PUT METHOD :  ** 관리자 권한 ** 
 
 1. 입력데이터
 
@@ -137,7 +177,7 @@ PUT METHOD :  ** 관리자 권한 **
             오류사유를 반환한다        
 
 
-라. form : 지원양식을 작성하고 읽어온다.
+## 라. form : 지원양식을 작성하고 읽어온다.
 
 - DESCRIPTION
  
@@ -153,22 +193,30 @@ PUT METHOD :  ** 관리자 권한 **
  ㄷ. delte : form?position=Developer&question_num=0
          position 과 question_num 으로 특정된 form 의 item 을 삭제한다.
 
-[ DETAILS ]
+### [ DETAILS ]
 
-GET METHOD : 
- 1. 입력데이터 :  form?position=Designer 
- 2. 예상되는 결과값
-    2-1. 성공시 
+#### GET METHOD : 
+
+1. 입력데이터 :  form?position=Designer 
+
+2. 예상되는 결과값
+
+   2-1. 성공시 
+         
             해당하는 POSITION 의 FORM 데이터를 반환한다
-    2-2. 실패시
+
+ 
+   2-2. 실패시
+
             오류사유를 반환한다         
    
 
-PUT METHOD :  ** 관리자 권한 ** 
+#### PUT METHOD :  ** 관리자 권한 ** 
 
  1. 입력데이터
 
-     1-1. 개발자 폼 양식예시 
+#### 1-1. 개발자 폼 양식예시 
+
 {
 	"form" : [
 		{
@@ -192,7 +240,9 @@ PUT METHOD :  ** 관리자 권한 **
     		 ]
 }
 
-     1-2. 디자이너 폼 양식예시 
+
+####  1-2. 디자이너 폼 양식예시 
+
   {
 	"form" : [
 		{
@@ -218,12 +268,17 @@ PUT METHOD :  ** 관리자 권한 **
 }
 
 2. 예상되는 결과값
+
     2-1. 성공시 
-            TRUE 를 반환한다
+
+          TRUE 를 반환한다
+
     2-2. 실패시
+
+
             오류사유를 반환한다        
 
-DELETE METHOD :  ** 관리자권한 ** 
+#### DELETE METHOD :  ** 관리자권한 ** 
 
 
 1.   form?position=Developer&question_num=0
@@ -231,7 +286,10 @@ DELETE METHOD :  ** 관리자권한 **
 2. 예상되는 결과값 
 
    2-1. 성공시 
+
             TRUE 를 반환한다
+
     2-2. 실패시
+
             오류사유를 반환한다    
                
