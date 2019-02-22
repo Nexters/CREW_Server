@@ -15,6 +15,7 @@
 
 
 ### ㄱ. get : auth/ 
+- header token 전송.
 
 
                 현재 사용자의 인증정보를 렌더링해준다
@@ -84,6 +85,7 @@
                 실패 시 : 오류사유를 반환한다
          
 #### POST  METHOD : 
+- req.body.form_id, req.body.answer
         
         A. resumes/ 
 
@@ -143,31 +145,32 @@
 
 
 
-[
-      {
-        "id": 782,
-        "score": 3229,
-        "comment": "excellent",
-        "created_at": "2019-02-21T04:59:47.000Z",
-        "updated_at": "2019-02-21T05:28:06.000Z",
-        "user_id": 4,
-        "user_admin_id": 4
-    } 
-]
+        [
+        {
+                "id": 782,
+                "score": 3229,
+                "comment": "excellent",
+                "created_at": "2019-02-21T04:59:47.000Z",
+                "updated_at": "2019-02-21T05:28:06.000Z",
+                "user_id": 4,
+                "user_admin_id": 4
+        } 
+        ]
 
 
 
 
-#### PUT METHOD :  ** 관리자 권한 ** 
+#### PUT METHOD :  ** 관리자 권한 **  
+- req.query.user_id, req.body.score, req.body.comment
 
 1. 입력데이터
 
         evaluation?user_id=유저번호
 
-{
-        "score": 90,
-        "comment" : "훌륭합니다"
-}
+        {
+                "score": 90,
+                "comment" : "훌륭합니다"
+        }
 
 
 2. 예상되는 결과값
@@ -214,58 +217,59 @@
 #### POST METHOD :  ** 관리자 권한 ** 
 
  1. 입력데이터
+- req.body.question_num, req.body.position, req.body.options, req.body.description
 
 #### 1-1. 개발자 폼 양식예시 
 
-{
-	"form" : [
-		{
-          "question_num" : 0,
-          "position" : "Developer",
-          "options" : ["하나","둘"],
-             "type" : "Selector",
-    		 "description" :  "개발자 테스트"
-		},
-			{
-          "question_num" : 1,
-          "position" : "Developer",
-          "type" : "Short_Answer",
-    		 "description" :  "좋아하는 프레임워크는???"
-		},
-          "question_num" : 2,
-          "position" : "Developer",
-          "type" : "Long_Answer",
-    		 "description" :  "좋아하는 프레임워크는???"
-		}
-    		 ]
-}
+        {
+                "form" : [
+                        {
+                "question_num" : 0,
+                "position" : "Developer",
+                "options" : ["하나","둘"],
+                "type" : "Selector",
+                        "description" :  "개발자 테스트"
+                        },
+                                {
+                "question_num" : 1,
+                "position" : "Developer",
+                "type" : "Short_Answer",
+                        "description" :  "좋아하는 프레임워크는???"
+                        },
+                "question_num" : 2,
+                "position" : "Developer",
+                "type" : "Long_Answer",
+                        "description" :  "좋아하는 프레임워크는???"
+                        }
+                        ]
+        }               
 
 
 ####  1-2. 디자이너 폼 양식예시 
 
-  {
-	"form" : [
-		{
-          "question_num" : 1,
-          "position" : "Designer",
-          "type" : "Short_answer",
-    		 "description" :  "좋아하는 커피를 적어주세요"
-		},
-			{
-          "question_num" : 2,
-          "position" : "Designer",
-          "options" : ["1년미만","50년이상"],
-             "type" : "Long_Answer",
-    		 "description" :  "제플린 사용 경력은??"
-		},
-      {
-          "question_num" : 3,
-          "position" : "Designer",
-             "type" : "Upload",
-    		 "description" :  "포트폴리오를 업로드 해주세요"
-		}
-    		 ]
-}
+        {
+                "form" : [
+                        {
+                "question_num" : 1,
+                "position" : "Designer",
+                "type" : "Short_answer",
+                        "description" :  "좋아하는 커피를 적어주세요"
+                        },
+                                {
+                "question_num" : 2,
+                "position" : "Designer",
+                "options" : ["1년미만","50년이상"],
+                "type" : "Long_Answer",
+                        "description" :  "제플린 사용 경력은??"
+                        },
+        {
+                "question_num" : 3,
+                "position" : "Designer",
+                "type" : "Upload",
+                        "description" :  "포트폴리오를 업로드 해주세요"
+                        }
+                        ]
+        }
 
 2. 예상되는 결과값
 
@@ -282,6 +286,7 @@
 
 
 1.   forms/:id
+- req.params.id = form_id
 
 2. 예상되는 결과값 
 
@@ -293,3 +298,21 @@
 
             오류사유를 반환한다    
                
+
+## 마. mail : mail을 전송한다.
+
+#### POST METHOD :  ** 관리자권한 ** 
+
+1. mail/
+
+        {
+                "mail_title": "hello",
+                "mailList": [
+                        {
+                                "mail": "tpwns1088@gmail.com",
+                                "name": "kimsejune"
+                        }
+                ],
+                "mail_context": "님 안녕하세요"
+                
+        }
