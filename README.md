@@ -8,7 +8,77 @@
 
 # API SPECIFICATION
 
-가. evaluation 
+가. auth/ 
+ 기능 : 사용자 인증을 확인하거나 발급한다.
+ ㄱ. get : auth/ 
+                현재 사용자의 인증정보를 렌더링해준다
+           auth/google 
+                구글인증을 요청한다
+           auth/google/callback 
+                구글 인증에 대한 콜백을 받는다
+           auth/facebook 
+                페이스북인증을 요청한다
+           auth/facebook/callback 
+                페이스북 인증에 대한 콜백을 받는다
+           auth/kakao 
+                카카오 인증을 요청한다
+           auth/kakao/callback 
+                카카오  인증에 대한 콜백을 받는다      
+        
+[ DETAILS ] 
+        공통 GET METHOD : 
+         성공 시:
+                /auth 로 redirect 한다.
+         실패 시: 
+                각자 SERVICE 회사에서 정의한 방식의 오류를 
+
+ 
+나. resumes/ 
+ 기능 : 지원서를 작성하고 읽어온다
+ ㄱ. get : resumes/ 
+                자신의 지원서를 읽는다
+           resumes/read?user_id=유저아이디
+                관리자 권한이 있는 사용자가 query 에 명시한 유저의 지원서를 조회한다.
+ ㄴ. post : resumes/            
+                지원자가 자신의 지원서를 서버에 제출한다.
+
+                     
+[ DETAILS ] 
+
+GET METHOD : 
+
+        A. resumes/ 
+         1. 입력데이터 : X , user_id = req.user.id
+                
+         2. 예상되는 결과값         
+                성공 시 : 자신의 지원서를 반환한다
+                실패 시 : 오류사유를 반환한다
+
+        B. resumes/read   ** 관리자권한 ** 
+         1. 입력데이터 : QUERY , user_id , user_id = req.query.user_id ,  admin_id = req.user.id        
+         2. 예상되는 결과값
+                성공 시 : QUERY 에 명시 된 유저의 지원서를 반환한다
+                실패 시 : 오류사유를 반환한다
+         
+POST  METHOD : 
+        
+        A. resumes/ 
+         1. 입력데이터 : 
+                 // 예시질문 :  좋아하는 프레임워크는 ?(Short_Answer)
+                {
+                        form_id : 폼아이디
+                        answer : "spring 프레임워크"
+                }
+
+                // 예시질문 : 개발경력을 골라주세요(Selector)
+
+                {
+                        form_id : 폼아이디
+                        answer : "1년미만"
+                }  
+                
+
+다. evaluation/ 
  기능 : 지원자들에 대한 운영진들의 평가를 작성하고 읽어온다.
  
  
@@ -16,18 +86,18 @@
 * score 는 반드시 0보다 크거나 같으며  100보다 작거나 같다.
 * score 는 반드시 숫자이다
 
-ㄱ. get:  http://localhost:3000/evaluation/read?user_id=유저번호
-                해당되는 user_id 의 모든 평가를 읽는다.
-ㄴ. put : http://localhost:3000/evaluation?user_id=유저번호
-                해당되는 user_id 쿼리에 명시된 유저의 현재 인증된 admin 의 평가를 생성/수정한다 
+ㄱ. get:  evaluation/read?user_id=유저번호
+                관리자 권한으로 해당되는 user_id 의 모든 평가를 읽는다.
+ㄴ. put : evaluation?user_id=유저번호
+                관리자 권한으로 해당되는 user_id 쿼리에 명시된 유저의 현재 인증된 admin 의 평가를 생성/수정한다 
 
 [ DETAILS ]
 
-GET METHOD : 
+GET METHOD : ** 관리자 권한 ** 
           
 
 1. 입력데이터
-        http://localhost:3000/evaluation?user_id=유저번호
+        evaluation?user_id=유저번호
 
 2. 예상되는 결과값
     2-1. 성공시 
@@ -48,11 +118,11 @@ GET METHOD :
     }
 ]
 
-PUT METHOD : 
+PUT METHOD :  ** 관리자 권한 ** 
 
 1. 입력데이터
 
-        http://localhost:3000/evaluation?user_id=유저번호
+        evaluation?user_id=유저번호
 
 {
         "score": 90,
@@ -67,7 +137,7 @@ PUT METHOD :
             오류사유를 반환한다        
 
 
-나. form : 지원양식을 작성하고 읽어온다.
+라. form : 지원양식을 작성하고 읽어온다.
 
 - DESCRIPTION
  
@@ -76,17 +146,17 @@ PUT METHOD :
  * position 은 Developer, Designer 로 명시한다.
  * 입력데이터 JSON 의 최상위 부모는 form 이다.
  
- ㄱ. get : http://localhost:3000/form?position=Designer 
+ ㄱ. get : form?position=직군명 ( Developer 혹은 Designer )
          position 쿼리에 명시된 position 의 모든 form data 를 읽는다
- ㄴ. put : http://localhost:3000/form
+ ㄴ. put : form
          body 에 입력하여 서버에 데이터를 보내 생성/업데이트 한다.
- ㄷ. delte : http://localhost:3000/form?position=Developer&question_num=0
+ ㄷ. delte : form?position=Developer&question_num=0
          position 과 question_num 으로 특정된 form 의 item 을 삭제한다.
 
 [ DETAILS ]
 
 GET METHOD : 
- 1. 입력데이터 :  http://localhost:3000/form?position=Designer 
+ 1. 입력데이터 :  form?position=Designer 
  2. 예상되는 결과값
     2-1. 성공시 
             해당하는 POSITION 의 FORM 데이터를 반환한다
@@ -94,7 +164,7 @@ GET METHOD :
             오류사유를 반환한다         
    
 
-PUT METHOD : 
+PUT METHOD :  ** 관리자 권한 ** 
 
  1. 입력데이터
 
@@ -153,12 +223,12 @@ PUT METHOD :
     2-2. 실패시
             오류사유를 반환한다        
 
-DELETE METHOD : 
+DELETE METHOD :  ** 관리자권한 ** 
 
 
-1.   http://localhost:3000/form?position=Developer&question_num=0
+1.   form?position=Developer&question_num=0
 
-2. 예상되는 결과값
+2. 예상되는 결과값 
 
    2-1. 성공시 
             TRUE 를 반환한다
