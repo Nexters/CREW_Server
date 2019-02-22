@@ -151,7 +151,7 @@ router.get('/google/callback', (req: express.Request, res: express.Response, nex
         return next(err)
       }
       // 로그인 성공
-      res.redirect(`${req.baseUrl}/success`)
+      res.redirect(`${process.env.TARGET_ORIGIN}/auth`)
     })
   })(req, res, next)
 })
@@ -171,7 +171,8 @@ router.get('/kakao/callback', (req: express.Request, res: express.Response, next
       if (err) {
         return next(err);
       }
-      res.redirect(`${req.baseUrl}/success`);    
+      console.log(`kakao: ~~ ${process.env.TARGET_ORIGIN}/auth`)
+      res.redirect(`${process.env.TARGET_ORIGIN}/auth`)  
     })
   })(req, res, next)
 })
@@ -197,7 +198,7 @@ router.get('/facebook/callback', (req: express.Request, res: express.Response, n
         return next(err)
       }
       // 로그인 성공
-      res.redirect(`${req.baseUrl}/success`)
+      res.redirect(`${process.env.TARGET_ORIGIN}/auth`)
     })
   })(req, res, next)
 })
@@ -214,6 +215,7 @@ router.get('/success', loginRequired, (req: express.Request, res: express.Respon
     token,
     'origin': process.env.TARGET_ORIGIN
   })
+  
 });
 
 export default router;
