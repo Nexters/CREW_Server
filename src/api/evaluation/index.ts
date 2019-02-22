@@ -4,6 +4,7 @@ import * as mw from "../../middleware";
 import { type } from "os";
 import { isNumber } from "util";
 
+
 const router = express.Router();
 
 
@@ -32,15 +33,15 @@ router.get('/read', async (req: express.Request, res: express.Response) => {
   try {
 
     const evaluation = await query.getEvaluationByUserId({ user_id });
-    return res.send(evaluation);
+    res.send(evaluation);
 
   } catch (err) {
     return res.status(504).end("at evaluation, unknow server error, it is probably matter of server or database server");
   }
 });
 
-router.put('/', async (req: express.Request, res: express.Response) => {
-  let result;
+router.post('/', async (req: express.Request, res: express.Response) => {
+  let result
   const user_id = req.query.user_id;
   const score = req.body.score;
   const comment = req.body.comment;
@@ -62,16 +63,16 @@ router.put('/', async (req: express.Request, res: express.Response) => {
 
   try {
 
-    result = await query.upsertEvaluationByUserId(
+    result = await query.upsertEvaluationByUserId({
       user_admin_id,
       user_id,
       score,
       comment
-    )
+    });
+    res.send(result);
   } catch (err) {
     return res.status(403).send("/evaluation put, INTERNAL_SERVER_ERROR : " + err);
   }
-  return res.send(result);
 
 
 });

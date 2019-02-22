@@ -8,9 +8,9 @@ import { FormJsonSkeleton, FormElementSkeleton, getPositionTypeAsEnum, getFormTy
 
 export async function findUserById({ id }) {
   const user = await db.User.findByPk(id);
-  if (!user) {
+  if (!user) { 
     return null;
-  }
+    }
   return user;
 };
 
@@ -20,8 +20,8 @@ export async function findUserByProvider({
 }) {
   const user = await db.User.find({ where: { member_provider, member_provider_number } });
   if (!user) {
-    return null;
-  }
+      return null;
+   }
   return user;
 }
 
@@ -37,9 +37,9 @@ export async function createUser({
     provide_image,
     token
   });
-  if (!newUser) {
+  if (!newUser) { 
     return null;
-  }
+   }
   return newUser;
 }
 
@@ -55,7 +55,9 @@ export async function updateUserInfo({ id, age, name, phone_number, email, job, 
     },
     { where: { id } }
   );
-  return updated_user;
+
+  return updated_user
+
 }
 
 export async function getEvaluationByUserId({ user_id }) {
@@ -64,29 +66,29 @@ export async function getEvaluationByUserId({ user_id }) {
       user_id: user_id,
     }
   })
-  if (!evaluation) {
+
+  if(!evaluation){
     return null;
   }
   return evaluation;
 }
 
-export async function findResumesByUserId({ user_id }) {
-  const resumes = await db.Resume.findAll({ where: { user_id } });
-  if (!resumes) {
+
+export async function findResumesByUserId({user_id}) {
+  const resumes = await db.Resume.findAll({where: {user_id}});
+  if(!resumes) { 
     return null;
   }
   return resumes;
 }
 
 
-export async function upsertEvaluationByUserId(
+export async function upsertEvaluationByUserId({
   user_admin_id,
   user_id,
   score,
   comment
-) {
-
-
+}) {
   const isExist = await db.Evaluation.findOne({
     where: {
       user_admin_id,
@@ -112,7 +114,8 @@ export async function upsertEvaluationByUserId(
     if (!newEvaluation) {
       return null;
     }
-    return true;
+
+    return newEvaluation;
   }
 
 
@@ -128,20 +131,17 @@ export async function upsertEvaluationByUserId(
       }
     }
   )
-
   if (!updateEvaluation) {
     return null;
   }
-  return true;
-
-
+  return updateEvaluation;
 }
 
-export async function findUserAdmin({ id }) {
-  const admin = await db.User.find({ where: { id: id, status: 'admin' } });
-  if (!admin) {
+export async function findUserAdmin({id}) {
+  const admin = await db.User.find({where: {id, status: 'admin'}});
+  if(!admin) { 
     return null;
-  }
+   }
   return admin;
 }
 
@@ -157,15 +157,15 @@ export async function updateORcreateResume({
   form_id,
   user_id
 }) {
-  const isExist = db.Resume.findOne({
+  const isExist = await db.Resume.findOne({
     where: {
       form_id: form_id,
       user_id: user_id
     }
   });
 
-  if (isExist) {
-    const updateResume = db.Resume.update({
+  if(isExist) {
+    const updateResume = await db.Resume.update({
       answer
     }, {
         where: {
@@ -176,12 +176,12 @@ export async function updateORcreateResume({
     )
     return updateResume;
   }
-  const createResume = db.Resume.create({
+  
+  const createResume = await db.Resume.create({
     answer,
     form_id,
     user_id
   });
-
   return createResume;
 }
 

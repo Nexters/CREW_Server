@@ -23,7 +23,7 @@ const s3upload = multer({
     bucket: process.env.S3_BUCKET_NAME,
     key: (req, file, cb) => {
       const ext = path.extname(file.originalname);
-      const fileName = `${uuid.v4()}.${ext}`;
+      const fileName = `${uuid.v4()}${ext}`;
       cb(null, fileName);
     },
     contentType: (req, file, cb) => {
@@ -51,10 +51,10 @@ router.options('*', mw.corsMiddleware);
 router.get('/', async (req: express.Request, res: express.Response) => {
   const user_id = req.user.id;
   try {
-    const resumes  = await query.findResumesByUserId({user_id});
+    const resumes = await query.findResumesByUserId({user_id});
     res.send(resumes);
   } catch (err) {
-    return res.status(404).end();
+    return res.status(404).end(`get resume: ${err}`);
   }
 });
 
@@ -62,12 +62,12 @@ router.get('/read', async (req: express.Request, res: express.Response) => {
   const admin_id = req.user.id;
   const user_id = req.query.user_id
   try {
-    const admin  = await query.findUserAdmin({id: admin_id});
+    const admin = await query.findUserAdmin({id: admin_id});
     if(!admin) { return res.status(404).end(); }
     const resumes = await query.findResumesByUserId({user_id});
     res.send(resumes);
-  } catch (error) {
-    return res.status(404).end();
+  } catch (err) {
+    return res.status(404).end(`get resumes/read: ${err}`);
   }
 });
 
@@ -82,18 +82,18 @@ router.post('/', s3upload.single('pdfFile'), async (req: express.Request, res: e
     if (!form) { return res.status(404).end() }
     if (form.type == FormType.Upload) {
       if(req.file == undefined) {
-        return res.status(404).end()
+        return res.status(404).end('post resumes: file undefined');
       }
       const answer = (req.file as any).location;
       const Resume = await query.updateORcreateResume({answer, form_id, user_id});
-      if(!Resume) { return res.status(404).end() }
+      if(!Resume) { return res.status(404).end('post resumes: resume(upload type) not found'); }
       res.send(Resume);
     }
     const Resume = await query.updateORcreateResume({answer, form_id, user_id});
-    if(!Resume) { return res.status(404).end() }
+    if(!Resume) { return res.status(404).end(`post resumes: resume(not upload type)`) }
     res.send(Resume);
   } catch (err) {
-    return res.status(404).end();
+    return res.status(404).end(`post resumes: ${err} `);
   }
 });
 

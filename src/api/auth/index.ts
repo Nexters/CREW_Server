@@ -133,18 +133,6 @@ passport.use(new FacebookStrategy({
  }
 }))
 
-router.get('/', (req: express.Request, res: express.Response) => {
-  res.render('auth.pug')
-});
-
-router.get('/success', loginRequired, (req: express.Request, res: express.Response) => {
-  const token = jwt.sign({ 'id': req.user.id }, `${process.env.JWT_SECRET}`)
-  res.render('success.pug', {
-    token,
-    'origin': process.env.TARGET_ORIGIN
-  })
-});
-
 router.get('/google', passport.authenticate('google', { scope: ["profile", "email"] }));
 
 router.get('/google/callback', (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -213,5 +201,19 @@ router.get('/facebook/callback', (req: express.Request, res: express.Response, n
     })
   })(req, res, next)
 })
+
+
+
+router.get('/', (req: express.Request, res: express.Response) => {
+  res.render('auth.pug')
+});
+
+router.get('/success', loginRequired, (req: express.Request, res: express.Response) => {
+  const token = jwt.sign({ 'id': req.user.id }, `${process.env.JWT_SECRET}`)
+  res.render('success.pug', {
+    token,
+    'origin': process.env.TARGET_ORIGIN
+  })
+});
 
 export default router;

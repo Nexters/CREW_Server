@@ -2,11 +2,13 @@ import express from "express";
 import { format } from "url";
 import { PositionType, FormType } from "../models/form"
 
-/*
- *  MODE in .env 
- *  PRODUCTION then STRICT ERROR
- *  DEV then LOOSE ERROR
- */
+
+// /*
+//  *  MODE in .env 
+//  *  PRODUCTION then STRICT ERROR
+//  *  DEV then LOOSE ERROR
+//  */
+
 
 
 export interface FormJsonSkeleton {
