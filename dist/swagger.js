@@ -102,6 +102,71 @@ const swaggerDefinition = {
                     type: 'date'
                 }
             }
+        },
+        'Resume': {
+            type: 'object',
+            properties: {
+                id: {
+                    type: 'number'
+                },
+                answer: {
+                    type: 'string'
+                },
+                created_at: {
+                    type: 'date'
+                },
+                updated_at: {
+                    type: 'date'
+                }
+            }
+        },
+        'Form': {
+            type: 'object',
+            properties: {
+                id: {
+                    type: 'number'
+                },
+                position: {
+                    type: 'PositionType'
+                },
+                question_num: {
+                    type: 'number'
+                },
+                description: {
+                    type: 'string'
+                },
+                options: {
+                    type: 'string'
+                },
+                type: {
+                    type: 'FormType'
+                },
+                created_at: {
+                    type: 'date'
+                },
+                updated_at: {
+                    type: 'date'
+                }
+            }
+        }, 'Evaluation': {
+            type: 'object',
+            properties: {
+                id: {
+                    type: 'number'
+                },
+                score: {
+                    type: 'number'
+                },
+                comment: {
+                    type: 'string'
+                },
+                created_at: {
+                    type: 'date'
+                },
+                updated_at: {
+                    type: 'date'
+                }
+            }
         }
     }
 };
