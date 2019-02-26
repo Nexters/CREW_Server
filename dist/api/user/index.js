@@ -27,6 +27,30 @@ router.use(mw.urlencodedMiddleware);
 router.use(mw.expressJwt);
 router.use(mw.corsMiddleware);
 router.use('*', mw.corsMiddleware);
+/**
+* @swagger
+* /users/:
+*   get:
+*     summary: 사용자 정보 가져오기
+*     tags: [User]
+*     parameters:
+*      -in: user
+*       name: id
+*       type: number
+*       description: 사용자 id 전달
+*     responses:
+*      200:
+*         description: if(admin) return All user else retrun self user
+*      404:
+*         description: not admin and not found user OR admin but not found user list
+*         schema:
+*           type: object
+*           properties:
+*             users:
+*               type: array
+*               items:
+*                 $ref: '#/definitions/user'
+*/
 router.get('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
     try {
         const id = req.user.id;
@@ -48,6 +72,29 @@ router.get('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
         return res.status(404).end(`get users: ${err}`);
     }
 }));
+/**
+* @swagger
+* /users/:id:
+*   get:
+*     summary:
+*     tags: [User]
+*     Parameters:
+*       id:
+*        type: number
+*        description: "id값이 params로 넘어온다."
+*     responses:
+*      200:
+*         description: 해당 id에 해당하는 user값을 가져온다.
+*      404:
+*         description: not found user
+*         schema:
+*           type: object
+*           properties:
+*             users:
+*               type:
+*               items:
+*                 $ref: '#/definitions/user'
+*/
 router.get('/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
     const id = req.params.id;
     try {
