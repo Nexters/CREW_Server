@@ -59,6 +59,7 @@ router.options('*', mw.corsMiddleware);
  *      - in: user
  *        name: id
  *        type: integer
+ *        value: 1
  *        description: 접속한 user id로 해당하는 resumes을 가져온다.
  *     responses: 
  *      200: 
@@ -96,10 +97,12 @@ router.get('/', async (req: express.Request, res: express.Response) => {
  *      - in: user
  *        name: id
  *        type: integer
+ *        value: 1
  *        description: 접속한 id값으로 admin인지 판단한다.
  *      - in: query
  *        name: user_id
  *        type: integer
+ *        value: 2
  *        description: user_id값으로 admin이 해당 user_id를 가진 사람의 resumes을 가져온다.
  *     responses: 
  *      200: 
@@ -130,6 +133,40 @@ router.get('/read', async (req: express.Request, res: express.Response) => {
 });
 
 
+
+ /**
+ * @swagger
+ * /resumes:
+ *   post:
+ *     summary: 자신의 resume을 추가한다.
+ *     tags: [Resume]
+ *     parameters: 
+ *      - in: user
+ *        name: id
+ *        type: integer
+ *        description: 접속한 id에 해당하는 resume을 생성한다.
+ *      - in: body
+ *        name: form_id
+ *        type: integer
+ *        value: 1
+ *        description: 작성한 form의 id를 가져온다.
+ *      - in: body
+ *        name: answer
+ *        type: string
+ *        description: form에 해당하는 answer을 적는다.
+ *     responses: 
+ *      200: 
+ *       description: 만약 user_id가 form_id를 가지고 있었다면 update 아니면 create를 한다.
+ *       properties: 
+ *        resume: 
+ *          $ref: '#/definitions/Resume'
+ *      403: 
+ *       $ref: '#/components/res/Forbidden'
+ *      404: 
+ *       $ref: '#/components/res/NotFound'
+ *      500: 
+ *       $ref: '#/components/res/BadRequest'
+ */
 router.post('/', s3upload.single('pdfFile'), async (req: express.Request, res: express.Response) => {
   const user_id = req.user.id;
   const form_id = req.body.form_id;
