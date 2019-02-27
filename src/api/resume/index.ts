@@ -53,16 +53,16 @@ router.options('*', mw.corsMiddleware);
  * @swagger
  * /resumes/:
  *   get:
- *     summary: 사용자 정보 가져오기
+ *     summary: 사용자가 자신의 자기소개서(resumes)를 가져온다.
  *     tags: [Resume]
  *     parameters: 
  *      - in: user
  *        name: id
  *        type: integer
- *        description: 접속한 user id로 해당하는 resume을 가져온다.
+ *        description: 접속한 user id로 해당하는 resumes을 가져온다.
  *     responses: 
  *      200: 
- *       description: admin 일 경우 users [user array] OR 자신의 user 값반환 
+ *       description: 자신의 resume을 가져온다.
  *       type: array
  *       properties: 
  *        resumes:
@@ -85,6 +85,37 @@ router.get('/', async (req: express.Request, res: express.Response) => {
   }
 });
 
+
+ /**
+ * @swagger
+ * /resumes/read?user_id=1:
+ *   get:
+ *     summary: admin이 선택한 user의 자기소개서(resumes)를 가져온다.
+ *     tags: [Resume]
+ *     parameters: 
+ *      - in: user
+ *        name: id
+ *        type: integer
+ *        description: 접속한 id값으로 admin인지 판단한다.
+ *      - in: query
+ *        name: user_id
+ *        type: integer
+ *        description: user_id값으로 admin이 해당 user_id를 가진 사람의 resumes을 가져온다.
+ *     responses: 
+ *      200: 
+ *       description: admin인지 판단후 query로 받은 user_id에 해당하는 user의 resumes을 가져온다.
+ *       type: array
+ *       properties: 
+ *        resumes:
+ *         items: 
+ *          $ref: '#/definitions/Resume'
+ *      403: 
+ *       $ref: '#/components/res/Forbidden'
+ *      404: 
+ *       $ref: '#/components/res/NotFound'
+ *      500: 
+ *       $ref: '#/components/res/BadRequest'
+ */
 router.get('/read', async (req: express.Request, res: express.Response) => {
   const admin_id = req.user.id;
   const user_id = req.query.user_id
