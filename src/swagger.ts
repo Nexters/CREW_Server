@@ -52,6 +52,82 @@ const swaggerDefinition = {
     }    
   },
   definitions: {
+    'JobType': {
+      type: 'object',
+      properties: {
+        Student: {
+          type: 'string',
+          value: 'Student'
+        },
+        Prepare: {
+          type: 'string',
+          value: 'Prepare'
+        },
+        Worker: {
+          type: 'string',
+          value: 'Worker'
+        }
+      }
+    },
+    'PositionType': {
+      type: 'object',
+      properties: {
+        Developer: {
+          type: 'string',
+          value: 'Developer'
+        },
+        Designer: {
+          type: 'string',
+          value: 'Designer'
+        }
+      }
+    },
+    'ApplicantStatus': {
+      type: 'object',
+      properties: {
+        Applicant: {
+          type: 'string',
+          value: 'Applicant'
+        },
+        PaperPass: {
+          type: 'string',
+          value: 'PaperPass'
+        },
+        InterviewPass: {
+          type: 'string',
+          value: 'InterviewPass'
+        },
+        Fail: {
+          type: 'string',
+          value: 'Fail'
+        },
+        Admin: {
+          type: 'string',
+          value: 'Admin'
+        }
+      }
+    },
+    'FormType': {
+      type: 'object',
+      properties: {
+        Short_Answer: {
+          type: 'string',
+          value: 'Short_Answer'
+        },
+        Long_Answer: {
+          type: 'string',
+          value: 'Long_Answer'
+        },
+        Selector: {
+          type: 'string',
+          value: 'Selector'
+        },
+        Upload: {
+          type: 'string',
+          value: 'Upload'
+        }
+      }
+    },
     'User': {
       type: 'object',
       properties: {
@@ -77,16 +153,19 @@ const swaggerDefinition = {
           type: 'string'
         },
         job: {
-          type: 'JobType'
+          type: 'JobType',
+          $ref: '#/definitions/JobType'
         },
         position: {
-          type: 'PositionType'
+          type: 'PositionType',
+          $ref: '#/definitions/PositionType'
         },
         provide_image: {
           type: 'string'
         },
         status: {
-          type: 'ApplicantStatus'
+          type: 'ApplicantStatus',
+          $ref: '#/definitions/ApplicantStatus'
         },
         token: {
           type: 'string'
@@ -123,7 +202,8 @@ const swaggerDefinition = {
           type: 'number'
         },
         position: {
-          type: 'PositionType'
+          type: 'PositionType',
+          $ref: '#/definitions/PositionType'
         },
         question_num: {
           type: 'number'
@@ -135,7 +215,8 @@ const swaggerDefinition = {
           type: 'string'
         },
         type: {
-          type: 'FormType'
+          type: 'FormType',
+          $ref: '#/definitions/FormType'
         },
         created_at: {
           type: 'date'
