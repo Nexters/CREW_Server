@@ -61,6 +61,32 @@ router.use(mw.urlencodedMiddleware);
 router.use(mw.expressJwt);
 router.use(mw.corsMiddleware);
 router.options('*', mw.corsMiddleware);
+/**
+* @swagger
+* /users/:
+*   get:
+*     summary: 사용자 정보 가져오기
+*     tags: [Resume]
+*     parameters:
+*      - in: user
+*        name: id
+*        type: integer
+*        description: 접속한 user id로 해당하는 resume을 가져온다.
+*     responses:
+*      200:
+*       description: admin 일 경우 users [user array] OR 자신의 user 값반환
+*       type: array
+*       properties:
+*        resumes:
+*         items:
+*          $ref: '#/definitions/Resume'
+*      403:
+*       $ref: '#/components/res/Forbidden'
+*      404:
+*       $ref: '#/components/res/NotFound'
+*      500:
+*       $ref: '#/components/res/BadRequest'
+*/
 router.get('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
     const user_id = req.user.id;
     try {
