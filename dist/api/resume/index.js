@@ -142,6 +142,40 @@ router.get('/read', (req, res) => __awaiter(this, void 0, void 0, function* () {
         return res.status(404).end(`get resumes/read: ${err}`);
     }
 }));
+/**
+* @swagger
+* /resumes
+*   post:
+*     summary: 자신의 resume을 추가한다.
+*     tags: [Resume]
+*     parameters:
+*      - in: user
+*        name: id
+*        type: integer
+*        description: 접속한 id에 해당하는 resume을 생성한다.
+*      - in: body
+*        name: form_id
+*        type: integer
+*        description: 작성한 form의 id를 가져온다.
+*      - in: body
+*        name: answer
+*        type: string
+*        description: form에 해당하는 answer을 적는다.
+*     responses:
+*      200:
+*       description: 만약 user_id가 form_id를 가지고 있었다면 update 아니면 create를 한다.
+*       type:
+*       properties:
+*        resumes:
+*         items:
+*          $ref: '#/definitions/Resume'
+*      403:
+*       $ref: '#/components/res/Forbidden'
+*      404:
+*       $ref: '#/components/res/NotFound'
+*      500:
+*       $ref: '#/components/res/BadRequest'
+*/
 router.post('/', s3upload.single('pdfFile'), (req, res) => __awaiter(this, void 0, void 0, function* () {
     const user_id = req.user.id;
     const form_id = req.body.form_id;
