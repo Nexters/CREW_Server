@@ -14,7 +14,7 @@ const router = express.Router();
  *     parameters: 
  *      - in: body
  *        name: mailList
- *        type: user array
+ *        type: array[user]
  *        description: mail을 보내기위한 user의 정보들이 들어있다. user.mail, user.name
  *      - in: body
  *        name: mail_title
