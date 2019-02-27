@@ -1,12 +1,46 @@
 # CREW SERVER
 
-- 김세준
-- 김현규
-- 김현준
+- [김세준](https://github.com/Kimsejune)
+- [김현규](https://github.com/hyungyu-harrykim)
+- [김현준](https://github.com/4whomtbts)
 
+
+# 사용 기술
+
+**1) Server**
+- Node.js
+- Express
+- TypeScript  
+- AWS (supported: EC2, S3(Image Storage), Caddy): Cloud Web Server
+
+<br>  
+
+**2) Database**
+- MYSQL
+- KNEX (node-mysql connector)
+- Express  
+<br>  
+
+
+**3) Package Manager**
+- npm
+<br>  
+
+**4) API Doc**
+- Swagger  
+        - /api-docs 에서 확인할 수 있다.  
+
+## Team Work
+- Git (소스 코드 버전 관리)
+- Zeplin (디자인 시안 공유)
+- 매주 목 HangOut 온라인 회의: 데일리 스크럼
+- 매주 목 오프라인 정기 회의: 이슈 공유 및 논의, 코드 리뷰
 
 
 # API SPECIFICATION
+
+
+
 
 ## 가. auth/ 
 

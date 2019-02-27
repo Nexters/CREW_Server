@@ -19,14 +19,14 @@ const router = express_1.default.Router();
 * /mail:
 *   post:
 *     summary: mail을 보낸다.
+*     tags: [Mail]
 *     parameters:
 *      - in: body
 *        name: mailList
-*        type: user array
+*        type: array[user]
 *        description: mail을 보내기위한 user의 정보들이 들어있다. user.mail, user.name
 *      - in: body
-*        name: form_id
-*        type: mail_title
+*        name: mail_title
 *        type: string
 *        description: mail의 title을 받아온다.
 *      - in: body

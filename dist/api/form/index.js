@@ -29,6 +29,33 @@ router.use(mw.urlencodedMiddleware);
 router.use(mw.expressJwt);
 router.use(mw.corsMiddleware);
 router.options('*', mw.corsMiddleware);
+/**
+* @swagger
+* /forms/:
+*   get:
+*     summary: 자기소개서를 작성할 forms 를가져온다.
+*     tags: [Form]
+*     parameters:
+*      - in: body
+*        name: position
+*        type: PositionType
+*        enum: [Developer, Designer]
+*        description: 지원한 Position을 받는다.
+*     responses:
+*      200:
+*       description: position에 맞는 forms를 가져온다.
+*       type: array
+*       properties:
+*        forms:
+*         items:
+*          $ref: '#/definitions/Form'
+*      403:
+*       $ref: '#/components/res/Forbidden'
+*      404:
+*       $ref: '#/components/res/NotFound'
+*      500:
+*       $ref: '#/components/res/BadRequest'
+*/
 router.get('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
     let position = req.query.position;
     if (!(position == form_1.PositionType.Designer || position == form_1.PositionType.Developer)) {
@@ -42,6 +69,45 @@ router.get('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
         return res.status(500).send("INTERNAL_SERVER_ERROR AT /form get");
     }
 }));
+/**
+* @swagger
+* /forms/:
+*   post:
+*     summary: admin이 forms을 만든다.
+*     tags: [Form]
+*     parameters:
+*      - in: user
+*        name: id
+*        type: integer
+*        value: 1
+*        description: 로그인한 user가 admin인지 판단한다.
+*      - in: body
+*        name: question_num
+*        type: integer
+*        value: 2
+*        description: 작성할 form의 question_num이다.
+*      - in: body
+*        name: position
+*        type: PositionType
+*        enum: [Developer, Designer]
+*        description: Position을 입력한다.
+*      - in: body
+*        name: options
+*        type: string
+*        description: form의 type이 selector인 경우에만 옵션으로 strirng으로 값들을 받는다.
+*     responses:
+*      200:
+*       description: 해당 position에 question_num가 존재하면 update하고 아니면 create한다.
+*       properties:
+*        result:
+*          $ref: '#/definitions/Form'
+*      403:
+*       $ref: '#/components/res/Forbidden'
+*      404:
+*       $ref: '#/components/res/NotFound'
+*      500:
+*       $ref: '#/components/res/BadRequest'
+*/
 router.post('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
     let result;
     console.log("/form post");
@@ -62,8 +128,37 @@ router.post('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
     }
     res.send(result);
 }));
+/**
+* @swagger
+* /forms/:id:
+*   delete:
+*     summary: admin이 선택한 form을 삭제한다.
+*     tags: [Form]
+*     parameters:
+*      - in: user
+*        name: id
+*        type: integer
+*        value: 1
+*        description: 로그인한 user가 admin인지 판단한다.
+*      - in: params
+*        name: id
+*        type: integer
+*        value: 2
+*        description: 삭제할 form의 id이다.
+*     responses:
+*      200:
+*       description: 선택한 form을 삭제한후 true를 return한다.
+*       properties:
+*        result:
+*          $ref: '#/definitions/Form'
+*      403:
+*       $ref: '#/components/res/Forbidden'
+*      404:
+*       $ref: '#/components/res/NotFound'
+*      500:
+*       $ref: '#/components/res/BadRequest'
+*/
 router.delete('/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
-    console.log("/form delete");
     const user_admin_id = req.user.id;
     const form_id = req.params.id;
     let isUserAdmin;

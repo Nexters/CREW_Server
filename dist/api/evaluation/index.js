@@ -28,6 +28,38 @@ router.use(mw.urlencodedMiddleware);
 router.use(mw.expressJwt);
 router.use(mw.corsMiddleware);
 router.options('*', mw.corsMiddleware);
+/**
+* @swagger
+* /evaluations/read?user_id=1:
+*   get:
+*     summary: admin이 선택한 user의 평가(evaluations)를 가져온다.
+*     tags: [Evaluation]
+*     parameters:
+*      - in: user
+*        name: id
+*        type: integer
+*        value: 1
+*        description: 접속한 id값으로 admin인지 판단한다.
+*      - in: query
+*        name: user_id
+*        type: integer
+*        value: 2
+*        description: user_id값으로 admin이 해당 user_id를 가진 사람의 evaluations을 가져온다.
+*     responses:
+*      200:
+*       description: admin인지 판단후 query로 받은 user_id에 해당하는 user의 evaluations을 가져온다.
+*       type: array
+*       properties:
+*        evaluations:
+*         items:
+*          $ref: '#/definitions/Evaluation'
+*      403:
+*       $ref: '#/components/res/Forbidden'
+*      404:
+*       $ref: '#/components/res/NotFound'
+*      500:
+*       $ref: '#/components/res/BadRequest'
+*/
 router.get('/read', (req, res) => __awaiter(this, void 0, void 0, function* () {
     const user_id = req.query.user_id;
     let user_admin_id = req.user.id;
@@ -46,9 +78,47 @@ router.get('/read', (req, res) => __awaiter(this, void 0, void 0, function* () {
         return res.status(504).end("at evaluation, unknow server error, it is probably matter of server or database server");
     }
 }));
+/**
+* @swagger
+* /Evaluations:
+*   post:
+*     summary: admin이 해당 user의 evaluation을 추가한다.
+*     tags: [Evaluation]
+*     parameters:
+*      - in: user
+*        name: id
+*        type: integer
+*        description: 접속한 id에 해당하는 resume을 생성한다.
+*      - in: body
+*        name: user_id
+*        type: integer
+*        value: 1
+*        description: 평가 대상의 user_id이다.
+*      - in: body
+*        name: score
+*        type: integer
+*        value: 90
+*        description: 평가 대상에 대한 점수이다.
+*      - in: body
+*        name: comment
+*        type: string
+*        description: 평가 대상에 대한 comment이다.
+*     responses:
+*      200:
+*       description: user가 이미 평가를 가지고있다면 update를 하고 아니라면 create를 한다.
+*       properties:
+*        result:
+*          $ref: '#/definitions/Evaluation'
+*      403:
+*       $ref: '#/components/res/Forbidden'
+*      404:
+*       $ref: '#/components/res/NotFound'
+*      500:
+*       $ref: '#/components/res/BadRequest'
+*/
 router.post('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
     let result;
-    const user_id = req.query.user_id;
+    const user_id = req.body.user_id;
     const score = req.body.score;
     const comment = req.body.comment;
     let user_admin_id = req.user.id;
