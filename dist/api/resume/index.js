@@ -71,6 +71,7 @@ router.options('*', mw.corsMiddleware);
 *      - in: user
 *        name: id
 *        type: integer
+*        value: 1
 *        description: 접속한 user id로 해당하는 resumes을 가져온다.
 *     responses:
 *      200:
@@ -107,10 +108,12 @@ router.get('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
 *      - in: user
 *        name: id
 *        type: integer
+*        value: 1
 *        description: 접속한 id값으로 admin인지 판단한다.
 *      - in: query
 *        name: user_id
 *        type: integer
+*        value: 2
 *        description: user_id값으로 admin이 해당 user_id를 가진 사람의 resumes을 가져온다.
 *     responses:
 *      200:
@@ -144,7 +147,7 @@ router.get('/read', (req, res) => __awaiter(this, void 0, void 0, function* () {
 }));
 /**
 * @swagger
-* /resumes
+* /resumes:
 *   post:
 *     summary: 자신의 resume을 추가한다.
 *     tags: [Resume]
@@ -156,6 +159,7 @@ router.get('/read', (req, res) => __awaiter(this, void 0, void 0, function* () {
 *      - in: body
 *        name: form_id
 *        type: integer
+*        value: 1
 *        description: 작성한 form의 id를 가져온다.
 *      - in: body
 *        name: answer
@@ -164,10 +168,8 @@ router.get('/read', (req, res) => __awaiter(this, void 0, void 0, function* () {
 *     responses:
 *      200:
 *       description: 만약 user_id가 form_id를 가지고 있었다면 update 아니면 create를 한다.
-*       type:
 *       properties:
-*        resumes:
-*         items:
+*        resume:
 *          $ref: '#/definitions/Resume'
 *      403:
 *       $ref: '#/components/res/Forbidden'

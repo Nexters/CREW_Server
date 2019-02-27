@@ -37,6 +37,7 @@ router.use('*', mw.corsMiddleware);
 *      - in: user
 *        name: id
 *        type: integer
+*        value: 1
 *        description: 접속한 user id로 admin 여부 판단.
 *     responses:
 *      200:
@@ -84,6 +85,7 @@ router.get('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
  *      - in: params
  *        name: id
  *        type: integer
+ *        value: 1
  *        description: id에 해당하는 사용자 정보 가져오기.
  *     responses:
  *      200:
@@ -122,6 +124,7 @@ router.get('/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
  *      - in: params
  *        name: id
  *        type: integer
+ *        value: 1
  *        description: id에 해당하는 사용자 정보 가져와서 업데이트하기.
  *      - in: body
  *        name: name
@@ -130,6 +133,7 @@ router.get('/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
  *      - in: body
  *        name: age
  *        type: integer
+ *        value: 27
  *        description: 나이
  *      - in: body
  *        name: phone_number
@@ -152,10 +156,8 @@ router.get('/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
  *     responses:
  *      200:
  *       description: id에 해당하는 user정보 가져오기.
- *       type: object
  *       properties:
  *        updated_user:
- *         items:
  *          $ref: '#/definitions/User'
  *      403:
  *       $ref: '#/components/res/Forbidden'

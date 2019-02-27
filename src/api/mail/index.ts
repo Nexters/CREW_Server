@@ -5,6 +5,35 @@ import { db } from "../../app";
 
 const router = express.Router();
 
+ /**
+ * @swagger
+ * /mail:
+ *   post:
+ *     summary: mail을 보낸다.
+ *     tags: [Mail]
+ *     parameters: 
+ *      - in: body
+ *        name: mailList
+ *        type: user array
+ *        description: mail을 보내기위한 user의 정보들이 들어있다. user.mail, user.name
+ *      - in: body
+ *        name: mail_title
+ *        type: string 
+ *        description: mail의 title을 받아온다.
+ *      - in: body
+ *        name: mail_context
+ *        type: string
+ *        description: mail의 내용을 받아온다.
+ *     responses: 
+ *      200: 
+ *       description: 성공하면 'mail send seccess' message가 넘어온다.
+ *      403: 
+ *       $ref: '#/components/res/Forbidden'
+ *      404: 
+ *       $ref: '#/components/res/NotFound'
+ *      500: 
+ *       $ref: '#/components/res/BadRequest'
+ */
 router.post('/', async (req: express.Request, res: express.Response) => {
   let account = await nodemailer.createTestAccount();
   let transporter = nodemailer.createTransport({
