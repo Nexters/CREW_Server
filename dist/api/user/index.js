@@ -27,6 +27,33 @@ router.use(mw.urlencodedMiddleware);
 router.use(mw.expressJwt);
 router.use(mw.corsMiddleware);
 router.use('*', mw.corsMiddleware);
+/**
+* @swagger
+* /users/:
+*   get:
+*     summary: 사용자 정보 가져오기
+*     tags: [User]
+*     parameters:
+*      - in: user
+*        name: id
+*        type: integer
+*        value: 1
+*        description: 접속한 user id로 admin 여부 판단.
+*     responses:
+*      200:
+*       description: admin 일 경우 users [user array] OR 자신의 user 값반환
+*       type: array
+*       properties:
+*        users:
+*         items:
+*          $ref: '#/definitions/User'
+*      403:
+*       $ref: '#/components/res/Forbidden'
+*      404:
+*       $ref: '#/components/res/NotFound'
+*      500:
+*       $ref: '#/components/res/BadRequest'
+*/
 router.get('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
     try {
         const id = req.user.id;
@@ -48,6 +75,32 @@ router.get('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
         return res.status(404).end(`get users: ${err}`);
     }
 }));
+/**
+ * @swagger
+ * /users/:id:
+ *   get:
+ *     summary: id에 해당하는 사용자 정보 가져오기
+ *     tags: [User]
+ *     parameters:
+ *      - in: params
+ *        name: id
+ *        type: integer
+ *        value: 1
+ *        description: id에 해당하는 사용자 정보 가져오기.
+ *     responses:
+ *      200:
+ *       description: id에 해당하는 user정보 가져오기.
+ *       schema:
+ *        properties:
+ *         user:
+ *          $ref: '#/definitions/User'
+ *      403:
+ *       $ref: '#/components/res/Forbidden'
+ *      404:
+ *       $ref: '#/components/res/NotFound'
+ *      500:
+ *       $ref: '#/components/res/BadRequest'
+ */
 router.get('/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
     const id = req.params.id;
     try {
@@ -61,6 +114,58 @@ router.get('/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
         return res.status(404).end(`get users/:id : ${err}`);
     }
 }));
+/**
+ * @swagger
+ * /users/:
+ *   put:
+ *     summary: id에 해당하는 사용자 정보 update하기.
+ *     tags: [User]
+ *     parameters:
+ *      - in: params
+ *        name: id
+ *        type: integer
+ *        value: 1
+ *        description: id에 해당하는 사용자 정보 가져와서 업데이트하기.
+ *      - in: body
+ *        name: name
+ *        type: string
+ *        description: 이름
+ *      - in: body
+ *        name: age
+ *        type: integer
+ *        value: 27
+ *        description: 나이
+ *      - in: body
+ *        name: phone_number
+ *        type: string
+ *        description: 연락처
+ *      - in: body
+ *        name: email
+ *        type: string
+ *        description: 이메일
+ *      - in: body
+ *        name: job
+ *        type: JobType
+ *        enum: [Student, Prepare, Worker]
+ *        description: 직업
+ *      - in: body
+ *        name: position
+ *        type: PositionType
+ *        enum: [Developer, Designer]
+ *        description: 지원직무
+ *     responses:
+ *      200:
+ *       description: id에 해당하는 user정보 가져오기.
+ *       properties:
+ *        updated_user:
+ *          $ref: '#/definitions/User'
+ *      403:
+ *       $ref: '#/components/res/Forbidden'
+ *      404:
+ *       $ref: '#/components/res/NotFound'
+ *      500:
+ *       $ref: '#/components/res/BadRequest'
+ */
 router.put("/", (req, res) => __awaiter(this, void 0, void 0, function* () {
     try {
         const id = req.user.id;
