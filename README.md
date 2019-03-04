@@ -37,6 +37,11 @@
 - 매주 목 오프라인 정기 회의: 이슈 공유 및 논의, 코드 리뷰
 
 
+# DB_ERD
+
+![ERD](crew-erd.png)
+
+
 # API SPECIFICATION
 
 
